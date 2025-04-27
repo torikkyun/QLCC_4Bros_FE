@@ -163,14 +163,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#ffffff",
-    lineHeight: 20,
-    marginBottom: 10,
+    lineHeight: 25,
+    marginTop: 1,
   },
   cardDesc: {
     color: "#ffffff",
     fontSize: 20,
-    lineHeight: 18,
-    marginTop: 10,
+    lineHeight: 25,
+    marginTop: 1,
   },
   voteButton: {
     backgroundColor: "#ffffff",
@@ -191,12 +191,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignSelf: "flex-start",
-    marginTop: 40,
+    marginTop: 14,
   },
   payButtonText: {
     color: "#9333ea",
     fontWeight: "800",
     fontSize: 20,
+
   },
   dollarSign: {
     fontSize: 160,
