@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomTabs from "../../components/BottomTabs";
+import BottomTabs from "@/app/components/BottomTabs";
 
 export default function PaymentScreen() {
   return (

@@ -78,9 +78,9 @@ export const useLogin = () => {
 
       // Điều hướng tuỳ theo vai trò
       if (decoded.role === "manager") {
-        router.replace("../user/screen/payment");
+        router.replace("../user/screens/Payment");
       } else if (decoded.role === "user") {
-        router.replace("../user/screen/home-user");
+        router.replace("../user/screens/HomeUser");
       } else {
         setServerError("Không xác định được vai trò người dùng");
       }
