@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import BottomTabs from "../../components/BottomTabs";
-
 export default function HomeScreen() {
   return (
     <View style={{ flex: 1 }}>
@@ -74,7 +73,7 @@ export default function HomeScreen() {
               <Text style={styles.cardDesc}>Điện...{"\n\n"}Nước...</Text>
               <Pressable
                 style={styles.payButton}
-                onPress={() => router.push("../ThanhToan")}
+                onPress={() => router.push("../user/screen/payment")}
               >
                 <Text style={styles.payButtonText}>Thanh Toán</Text>
               </Pressable>

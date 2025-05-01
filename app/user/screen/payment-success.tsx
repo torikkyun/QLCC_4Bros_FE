@@ -35,7 +35,7 @@ export default function PaymentSuccess() {
 
           {/* Button */}
           <TouchableOpacity
-            onPress={() => router.replace("/")}
+            onPress={() => router.replace("/Admin/Screen/notification")}
             className="bg-emerald-400 w-full py-3 rounded-xl"
           >
             <Text className="text-white font-semibold text-center">
