@@ -59,7 +59,7 @@ export default function Notifications() {
                   key={i}
                   onPress={() =>
                     router.push({
-                      pathname: "/user/screens/notifications-detail",
+                      pathname: "./user/screens/notifications-detail",
                       params: {
                         date: group.date,
                         content: msg,

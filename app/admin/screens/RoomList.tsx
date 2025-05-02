@@ -30,7 +30,14 @@ export default function RoomListScreen() {
         <Pressable onPress={onDelete}>
           <Ionicons name="trash-outline" size={22} color="black" />
         </Pressable>
-        <Pressable onPress={() => router.push("/login")}>
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "./admin/RoomEdit", // todo
+              params: { roomData: JSON.stringify(room) },
+            })
+          }
+        >
           <Feather name="edit" size={22} color="black" />
         </Pressable>
       </View>
@@ -61,7 +68,7 @@ export default function RoomListScreen() {
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingTop: 16,
-          paddingBottom: 100,
+          paddingBottom: 24,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -80,7 +87,16 @@ export default function RoomListScreen() {
                 onDelete={() => handleDelete(room.id)}
               />
               <View className="flex-row justify-between items-center">
-                <Text className="text-gray-400">View More Info</Text>
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "./admin/RoomEdit", // todo
+                      params: { roomData: JSON.stringify(room) },
+                    })
+                  }
+                >
+                  <Text className="text-gray-400">View More Info</Text>
+                </Pressable>
                 <View className="items-end">
                   <Text className="text-gray-400 text-sm">Chi phí tháng</Text>
                   <Text className="text-lg font-bold">${room.price}</Text>

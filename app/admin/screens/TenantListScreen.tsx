@@ -328,6 +328,7 @@ const TenantListScreen: React.FC = () => {
         </Text>
       </View>
       <View className="items-end">
+        {/* Todo */}
         <Text className="text-xs text-gray-500 mb-1">{item.time}</Text>
         <View className="flex-row">
           <TouchableOpacity
@@ -356,10 +357,8 @@ const TenantListScreen: React.FC = () => {
         </View>
         <Ionicons name="menu" size={24} color="#1a3c5e" />
       </View>
-
       {/* Title */}
       <Text className="text-xl font-semibold mb-4">Tenant List</Text>
-
       {/* Search Bar */}
       <View className="flex-row items-center bg-[#e6f0fa] p-3 rounded-2xl mb-4">
         <Ionicons name="search" size={20} color="#888" />
@@ -371,7 +370,6 @@ const TenantListScreen: React.FC = () => {
         />
         <Ionicons name="options" size={20} color="#888" />
       </View>
-
       {/* Tenant List */}
       <FlatList
         data={filteredTenants}
@@ -381,9 +379,8 @@ const TenantListScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-
       {/* Bottom Navigation */}
-      <BottomTabsAdmin addTenant={addTenant} />
+      <BottomTabsAdmin addTenant={addTenant} /> {/* Todo */}
     </View>
   );
 };
