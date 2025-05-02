@@ -10,30 +10,31 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSignUp } from "./sign-up.hook";
+import { Eye, EyeOff } from "lucide-react-native";
 
 export default function SignUpScreen() {
   const { form, errors, isLoading, serverError, handleChange, handleSubmit } =
     useSignUp();
-
+  const router = useRouter();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white px-6 pt-20"
+      className="flex-1 bg-white px-8 pt-40 pb-20"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Header */}
-      <View className="items-center mb-10">
-        <Text className="text-lg text-blue-900 font-semibold">Chúc mừng</Text>
-        <Text className="text-sm text-gray-500 mt-1 text-center">
-          Bạn đã xác thực email thành công
-        </Text>
-      </View>
-
       {/* Title */}
-      <Text className="text-3xl font-bold text-blue-900 text-center mb-1">
+      <Text className="text-4xl font-bold text-blue-900 text-center mb-1">
         Đăng ký
       </Text>
-      <Text className="text-sm text-gray-500 text-center mb-6">
-        Vui lòng điền thông tin bổ sung
+      <Text className="text-lg text-gray-500 text-center mb-6">
+        Vui lòng điền thông tin
       </Text>
 
       {/* Server Error */}
@@ -44,8 +45,8 @@ export default function SignUpScreen() {
       )}
 
       {/* Firstname & Lastname */}
-      <View className="flex-row mb-1">
-        <View className="w-1/2 mr-1">
+      <View className="flex-row mb-2 justify-between">
+        <View style={{ width: "49%" }}>
           <TextInput
             className={`bg-gray-100 px-4 py-3 rounded-md text-base ${
               errors.firstName ? "border border-red-500" : ""
@@ -61,7 +62,7 @@ export default function SignUpScreen() {
             </Text>
           )}
         </View>
-        <View className="w-1/2 ml-1">
+        <View style={{ width: "49%" }}>
           <TextInput
             className={`bg-gray-100 px-4 py-3 rounded-md text-base ${
               errors.lastName ? "border border-red-500" : ""
@@ -96,34 +97,54 @@ export default function SignUpScreen() {
       </View>
 
       {/* Password */}
-      <View className="mb-1">
+      <View className="mb-1 relative">
         <TextInput
           className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
             errors.password ? "border border-red-500" : ""
           }`}
-          placeholder="Mật khẩu"
+          placeholder="••••••••••"
           placeholderTextColor="#999"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           value={form.password}
           onChangeText={(text) => handleChange("password", text)}
         />
+        <TouchableOpacity
+          onPress={toggleShowPassword}
+          className="absolute right-3 top-3"
+        >
+          {showPassword ? (
+            <Eye color="#666" size={20} />
+          ) : (
+            <EyeOff color="#666" size={20} />
+          )}
+        </TouchableOpacity>
         {errors.password && (
           <Text className="text-red-500 text-xs mt-1">{errors.password}</Text>
         )}
       </View>
 
       {/* Confirm Password */}
-      <View className="mb-4">
+      <View className="mb-4 relative">
         <TextInput
           className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
             errors.confirmPassword ? "border border-red-500" : ""
           }`}
           placeholder="Nhập lại mật khẩu"
           placeholderTextColor="#999"
-          secureTextEntry
+          secureTextEntry={!showConfirmPassword} // Sử dụng state riêng cho confirm password
           value={form.confirmPassword}
           onChangeText={(text) => handleChange("confirmPassword", text)}
         />
+        <TouchableOpacity
+          onPress={toggleShowConfirmPassword}
+          className="absolute right-3 top-3"
+        >
+          {showConfirmPassword ? (
+            <Eye color="#666" size={20} />
+          ) : (
+            <EyeOff color="#666" size={20} />
+          )}
+        </TouchableOpacity>
         {errors.confirmPassword && (
           <Text className="text-red-500 text-xs mt-1">
             {errors.confirmPassword}
@@ -147,7 +168,10 @@ export default function SignUpScreen() {
       </TouchableOpacity>
 
       {/* Login Link */}
-      <TouchableOpacity className="items-center">
+      <TouchableOpacity
+        className="items-center"
+        onPress={() => router.replace("../login")}
+      >
         <Text className="text-center text-sm text-gray-600 underline">
           Đã có tài khoản? Đăng nhập
         </Text>

@@ -8,6 +8,7 @@ import {
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRoomList } from "../hooks/RoomList.hook";
+import BottomTabs from "@/app/components/BottomTabs";
 
 export default function RoomListScreen() {
   const router = useRouter();
@@ -29,7 +30,14 @@ export default function RoomListScreen() {
         <Pressable onPress={onDelete}>
           <Ionicons name="trash-outline" size={22} color="black" />
         </Pressable>
-        <Pressable onPress={() => router.push("/login")}>
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "./admin/RoomEdit", // todo
+              params: { roomData: JSON.stringify(room) },
+            })
+          }
+        >
           <Feather name="edit" size={22} color="black" />
         </Pressable>
       </View>
@@ -60,7 +68,7 @@ export default function RoomListScreen() {
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingTop: 16,
-          paddingBottom: 100,
+          paddingBottom: 24,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -79,7 +87,16 @@ export default function RoomListScreen() {
                 onDelete={() => handleDelete(room.id)}
               />
               <View className="flex-row justify-between items-center">
-                <Text className="text-gray-400">View More Info</Text>
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "./admin/RoomEdit", // todo
+                      params: { roomData: JSON.stringify(room) },
+                    })
+                  }
+                >
+                  <Text className="text-gray-400">View More Info</Text>
+                </Pressable>
                 <View className="items-end">
                   <Text className="text-gray-400 text-sm">Chi phí tháng</Text>
                   <Text className="text-lg font-bold">${room.price}</Text>
@@ -92,27 +109,7 @@ export default function RoomListScreen() {
 
       {/* Bottom Tab Bar */}
       <View className="flex-row justify-around items-center h-16 border-t border-gray-200">
-        <Pressable className="items-center">
-          <Ionicons name="home" size={24} color="#5b21b6" />
-          <Text className="text-xs text-purple-700">Home</Text>
-        </Pressable>
-        <Pressable className="items-center">
-          <Ionicons name="people-outline" size={24} color="gray" />
-          <Text className="text-xs text-gray-500">User List</Text>
-        </Pressable>
-        <Pressable className="items-center">
-          <View className="bg-purple-700 p-3 rounded-full">
-            <Ionicons name="add" size={24} color="white" />
-          </View>
-        </Pressable>
-        <Pressable className="items-center">
-          <Ionicons name="list" size={24} color="gray" />
-          <Text className="text-xs text-gray-500">Room List</Text>
-        </Pressable>
-        <Pressable className="items-center">
-          <Ionicons name="person-outline" size={24} color="gray" />
-          <Text className="text-xs text-gray-500">Profile</Text>
-        </Pressable>
+        <BottomTabs />
       </View>
     </View>
   );
