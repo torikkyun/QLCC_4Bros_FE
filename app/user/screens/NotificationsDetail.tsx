@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeftIcon } from "react-native-heroicons/outline";
-import BottomTabs from "../../components/BottomTabs";
+import BottomTabs from "@/app/components/BottomTabs";
 
 export default function NotificationDetail() {
   const router = useRouter();

@@ -3,22 +3,22 @@ import { Stack } from "expo-router";
 export default function AuthLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
-      <Stack.Screen name="home-user" options={{ title: "Trang chủ" }} />
+      <Stack.Screen name="HomeUser" options={{ title: "Trang chủ" }} />
       <Stack.Screen
-        name="payment-success"
+        name="PaymentSuccess"
         options={{ title: "Thanh toán thành công" }}
       />
       <Stack.Screen name="payment" options={{ title: "Thanh toán" }} />
       <Stack.Screen
-        name="payment-history"
+        name="PaymentHistory"
         options={{ title: "Lịch sử thanh toán" }}
       />
       <Stack.Screen
-        name="notifications"
+        name="Notifications"
         options={{ title: "Thông báo chung" }}
       />
       <Stack.Screen
-        name="notifications-detail"
+        name="NotificationsDetail"
         options={{ title: "Thông báo chi tiết" }}
       />
     </Stack>

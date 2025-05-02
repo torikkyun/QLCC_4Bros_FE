@@ -1,4 +1,5 @@
 import axios from "axios";
+// import { BACKEND_URL } from "@env";
 
 const API_URL = "http://103.167.89.178:3000/api/auth/signin";
 
@@ -18,7 +19,7 @@ export const login = async (data: LoginData): Promise<LoginResponse> => {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      timeout: 10000, // 10 seconds timeout
+      timeout: 10000,
     });
 
     return response.data;

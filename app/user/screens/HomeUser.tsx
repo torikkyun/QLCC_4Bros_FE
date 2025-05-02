@@ -1,3 +1,4 @@
+// screens/HomeUser.tsx
 import React from "react";
 import {
   View,
@@ -6,11 +7,16 @@ import {
   Image,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
-import BottomTabs from "../../components/BottomTabs";
+import BottomTabs from "@/app/components/BottomTabs";
+import FloatingButton from "@/app/components/FloatingButton";
+import { useHomeUser } from "../hooks/HomeUser.hook";
 
 export default function HomeScreen() {
+  const { candidate, loading, error } = useHomeUser();
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -41,16 +47,26 @@ export default function HomeScreen() {
             ]}
           >
             <View style={styles.cardLeft}>
-              <Text style={styles.cardTitle}>Daniel</Text>
-              <Text style={styles.cardDesc}>
-                Điểm bình chọn: 9{"\n\n"}Description..
-              </Text>
-              <Pressable
-                style={styles.voteButton}
-                onPress={() => router.push("../BauCu")}
-              >
-                <Text style={styles.voteButtonText}>Bình Chọn</Text>
-              </Pressable>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : error ? (
+                <Text style={styles.cardDesc}>{error}</Text>
+              ) : (
+                <>
+                  <Text style={styles.cardTitle}>{candidate?.name}</Text>
+                  <Text style={styles.cardDesc}>
+                    Điểm bình chọn: {candidate?.voteCount}
+                    {"\n"}
+                    {candidate?.description}
+                  </Text>
+                  <Pressable
+                    style={styles.voteButton}
+                    onPress={() => router.push("../BauCu")}
+                  >
+                    <Text style={styles.voteButtonText}>Bình Chọn</Text>
+                  </Pressable>
+                </>
+              )}
             </View>
             <View style={styles.cardRight}>
               <Image
@@ -71,7 +87,9 @@ export default function HomeScreen() {
           >
             <View style={[styles.cardLeft, styles.card2Left]}>
               <Text style={styles.cardTitle}>Chi phí tháng này</Text>
-              <Text style={styles.cardDesc}>Điện...{"\n\n"}Nước...</Text>
+              <Text style={styles.cardDesc}>
+                Điện: 1000kw {"\n"}Nước: 100 m3
+              </Text>
               <Pressable
                 style={styles.payButton}
                 onPress={() => router.push("../ThanhToan")}
@@ -85,12 +103,14 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      <FloatingButton />
       <BottomTabs />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // giữ nguyên style như bạn gửi ban đầu
   container: {
     paddingTop: 40,
     paddingHorizontal: 16,
@@ -170,7 +190,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20,
     lineHeight: 25,
-    marginTop: 1,
+    marginTop: 8,
   },
   voteButton: {
     backgroundColor: "#ffffff",
@@ -197,7 +217,6 @@ const styles = StyleSheet.create({
     color: "#9333ea",
     fontWeight: "800",
     fontSize: 20,
-
   },
   dollarSign: {
     fontSize: 160,

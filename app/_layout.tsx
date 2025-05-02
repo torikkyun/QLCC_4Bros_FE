@@ -29,7 +29,8 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="user/screen" options={{ headerShown: false }} />
+        <Stack.Screen name="user/screens" options={{ headerShown: false }} />
+        <Stack.Screen name="admin/screens" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
       </Stack>

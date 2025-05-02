@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { ArrowLeftIcon } from "react-native-heroicons/outline";
 import { useRouter } from "expo-router";
-import BottomTabs from "../../components/BottomTabs";
+import BottomTabs from "@/app/components/BottomTabs";
 
 const mockNotifications = [
   {
@@ -59,7 +59,7 @@ export default function Notifications() {
                   key={i}
                   onPress={() =>
                     router.push({
-                      pathname: "/user/notifications-detail",
+                      pathname: "/user/screens/notifications-detail",
                       params: {
                         date: group.date,
                         content: msg,
