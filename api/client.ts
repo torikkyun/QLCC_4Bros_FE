@@ -1,4 +1,9 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_CONFIG } from "./config";
 
@@ -8,23 +13,23 @@ const apiClient: AxiosInstance = axios.create({
   headers: API_CONFIG.HEADERS,
 });
 
-// // Request interceptor - thêm token vào header
-// apiClient.interceptors.request.use(
-//   async (config: AxiosRequestConfig) => {
-//     try {
-//       const token = await AsyncStorage.getItem("userToken");
-//       if (token && config.headers) {
-//         config.headers.Authorization = `Bearer ${token}`;
-//       }
-//       return config;
-//     } catch (error) {
-//       return Promise.reject(error);
-//     }
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+// Request interceptor - thêm token vào header
+apiClient.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // // Response interceptor - xử lý refresh token khi token hết hạn
 // apiClient.interceptors.response.use(
