@@ -194,7 +194,7 @@ const NotificationListScreen: React.FC = () => {
         </TouchableOpacity>
         <TouchableOpacity
           className="items-center"
-          onPress={() => router.push("./CreateNotification")}
+          onPress={() => router.push("./CreateNotificationScreen")}
         >
           <Text className="text-3xl text-purple-500">+</Text>
         </TouchableOpacity>

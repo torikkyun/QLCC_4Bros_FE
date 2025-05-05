@@ -17,7 +17,7 @@ const CreateNotificationScreen: React.FC = () => {
   const router = useRouter();
   const [message, setMessage] = useState("");
 
-  // Lấy ngày hiện tại
+  // Lấy ngày hiện tại dưới định dạng "dd/mm/yyyy"
   const currentDate = new Date().toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
@@ -34,8 +34,8 @@ const CreateNotificationScreen: React.FC = () => {
     const newNotification: Notification = {
       id: Date.now(),
       title: "Thông báo chung",
-      message,
-      date: new Date().toISOString().split("T")[0],
+      message: message.trim(),
+      date: currentDate,
       read: false,
     };
 
@@ -44,17 +44,19 @@ const CreateNotificationScreen: React.FC = () => {
       const notifications = savedNotifications
         ? JSON.parse(savedNotifications)
         : [];
+
       const updatedNotifications = [...notifications, newNotification];
       await AsyncStorage.setItem(
         "notifications",
         JSON.stringify(updatedNotifications)
       );
+
       Alert.alert("Thành công", "Thông báo đã được tạo!", [
         {
           text: "OK",
           onPress: () => {
             setMessage("");
-            router.push("/admin/screens/notification");
+            router.push("/(admin)/CreateNotificationScreen");
           },
         },
       ]);
