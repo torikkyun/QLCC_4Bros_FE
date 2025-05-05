@@ -1,9 +1,26 @@
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { ArrowLeftIcon } from "react-native-heroicons/outline";
 import { useRouter } from "expo-router";
 import BottomTabs from "@/app/components/BottomTabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const mockNotifications = [
+interface NotificationItem {
+  id: number;
+  title: string;
+  message: string;
+  date: string;
+  read: boolean;
+}
+
+interface NotificationGroup {
+  id: number;
+  date: string;
+  messages: string[];
+  fullMessages?: string[]; // Thêm optional property này
+}
+
+const initialMock: NotificationGroup[] = [
   {
     id: 1,
     date: "06/09/2025",
@@ -25,8 +42,93 @@ const mockNotifications = [
   },
 ];
 
+const truncateMessage = (message: string, wordCount: number = 6) => {
+  const words = message.split(" ");
+  if (words.length <= wordCount) return message;
+  return words.slice(0, wordCount).join(" ") + "...";
+};
+
 export default function Notifications() {
   const router = useRouter();
+  const [notifications, setNotifications] =
+    useState<NotificationGroup[]>(initialMock);
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("notifications");
+        if (stored) {
+          let parsed;
+          try {
+            parsed = JSON.parse(stored);
+          } catch (e) {
+            parsed = [
+              {
+                id: Date.now(),
+                title: "Thông báo",
+                message: stored,
+                date: new Date().toISOString(),
+                read: false,
+              },
+            ];
+          }
+
+          const notificationItems: NotificationItem[] = Array.isArray(parsed)
+            ? parsed
+            : [
+                {
+                  id: Date.now(),
+                  title: "Thông báo",
+                  message:
+                    typeof parsed === "object"
+                      ? JSON.stringify(parsed)
+                      : String(parsed),
+                  date: new Date().toISOString(),
+                  read: false,
+                },
+              ];
+
+          const grouped: {
+            [key: string]: Array<{ preview: string; full: string }>;
+          } = {};
+          notificationItems.forEach((n) => {
+            const dateVN = new Date(n.date).toLocaleDateString("vi-VN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+            if (!grouped[dateVN]) grouped[dateVN] = [];
+            grouped[dateVN].push({
+              preview: truncateMessage(n.message),
+              full: n.message,
+            });
+          });
+
+          const extraGroups: NotificationGroup[] = Object.entries(grouped).map(
+            ([date, messages], idx) => ({
+              id: Date.now() + idx,
+              date,
+              messages: messages.map((m) => m.preview),
+              fullMessages: messages.map((m) => m.full),
+            })
+          );
+
+          setNotifications((prev) => [...extraGroups, ...prev]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi load notifications:", error);
+      }
+    };
+
+    loadNotifications();
+  }, []);
+
+  const getFullMessage = (groupIndex: number, messageIndex: number) => {
+    if (notifications[groupIndex]?.fullMessages) {
+      return notifications[groupIndex].fullMessages[messageIndex];
+    }
+    return notifications[groupIndex]?.messages[messageIndex] || "";
+  };
 
   return (
     <View className="flex-1 bg-gray-50 pt-14 px-4">
@@ -45,8 +147,8 @@ export default function Notifications() {
 
       {/* Content */}
       <ScrollView showsVerticalScrollIndicator={false}>
-        {mockNotifications.map((group, index) => (
-          <View key={index} className="mb-6">
+        {notifications.map((group, groupIndex) => (
+          <View key={groupIndex} className="mb-6">
             <View className="bg-gray-100 px-4 py-2 rounded-md mb-3">
               <Text className="text-sm font-medium text-gray-700">
                 Thông báo: {group.date}
@@ -54,20 +156,21 @@ export default function Notifications() {
             </View>
 
             <View className="bg-white rounded-xl shadow shadow-gray-200 overflow-hidden">
-              {group.messages.map((msg, i) => (
+              {group.messages.map((msg, messageIndex) => (
                 <TouchableOpacity
-                  key={i}
+                  key={messageIndex}
                   onPress={() =>
                     router.push({
-                      pathname: "./user/screens/notifications-detail",
+                      pathname: "./NotificationsDetail",
                       params: {
                         date: group.date,
-                        content: msg,
+                        preview: msg,
+                        content: getFullMessage(groupIndex, messageIndex),
                       },
                     })
                   }
                   className={`px-5 py-3 ${
-                    i !== group.messages.length - 1
+                    messageIndex !== group.messages.length - 1
                       ? "border-b border-gray-100"
                       : ""
                   }`}
