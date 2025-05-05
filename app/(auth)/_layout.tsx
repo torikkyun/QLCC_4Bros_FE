@@ -13,13 +13,15 @@ export default function AuthLayout() {
     try {
       const userToken = await AsyncStorage.getItem("userToken");
       if (userToken) {
-        // Thêm logic kiểm tra token có hợp lệ không ở đây
-        // Ví dụ: gọi API để validate token
         const rooms = await roomService.getRooms({
           page: 1,
           limit: 1,
         });
-        console.log(rooms);
+        if (!rooms.data) {
+          await AsyncStorage.removeItem("userToken");
+          router.replace("./Login");
+          return;
+        }
         router.replace("/(user)/HomeUser");
       }
     } catch (error) {

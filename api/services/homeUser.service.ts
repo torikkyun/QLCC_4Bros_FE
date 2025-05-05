@@ -19,7 +19,6 @@ export async function getOngoingElectionId(): Promise<number | null> {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(res);
   if (!res.ok) throw new Error("Failed to fetch election list");
 
   const json = await res.json();
