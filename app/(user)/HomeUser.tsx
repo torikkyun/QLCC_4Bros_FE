@@ -1,4 +1,3 @@
-// screens/HomeUser.tsx
 import React from "react";
 import {
   View,
@@ -10,9 +9,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
-import BottomTabs from "@/app/components/BottomTabs";
-import FloatingButton from "@/app/components/FloatingButton";
-import { useHomeUser } from "../hooks/HomeUser.hook";
+import BottomTabs from "@/components/BottomTabs";
+import FloatingButton from "@/components/FloatingButton";
+import { useHomeUser } from "@/hooks/useHomeUser";
 
 export default function HomeScreen() {
   const { candidate, loading, error } = useHomeUser();
@@ -29,7 +28,7 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable
             style={styles.tabButton}
-            onPress={() => router.push("../DanhSachPhong")}
+            // onPress={() => router.push("../DanhSachPhong")}
           >
             <Text style={styles.inactiveTabText}>Danh sách phòng</Text>
           </Pressable>
@@ -61,7 +60,7 @@ export default function HomeScreen() {
                   </Text>
                   <Pressable
                     style={styles.voteButton}
-                    onPress={() => router.push("../BauCu")}
+                    // onPress={() => router.push("../BauCu")}
                   >
                     <Text style={styles.voteButtonText}>Bình Chọn</Text>
                   </Pressable>
@@ -70,7 +69,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.cardRight}>
               <Image
-                source={require("../../../assets/images/daniel.jpg")}
+                source={require("@/assets/images/daniel.jpg")}
                 resizeMode="cover"
                 style={styles.cardImage}
               />
@@ -92,7 +91,7 @@ export default function HomeScreen() {
               </Text>
               <Pressable
                 style={styles.payButton}
-                onPress={() => router.push("../ThanhToan")}
+                // onPress={() => router.push("./Payment")}
               >
                 <Text style={styles.payButtonText}>Thanh Toán</Text>
               </Pressable>

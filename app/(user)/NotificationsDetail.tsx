@@ -1,9 +1,10 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeftIcon } from "react-native-heroicons/outline";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
+
 export default function NotificationDetail() {
   const router = useRouter();
   const { date, preview, content } = useLocalSearchParams();

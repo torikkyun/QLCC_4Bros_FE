@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useSignUp } from "./sign-up.hook";
+import { useSignUp } from "@/hooks/useSignUp";
 import { Eye, EyeOff } from "lucide-react-native";
 
 export default function SignUpScreen() {
@@ -170,7 +170,7 @@ export default function SignUpScreen() {
       {/* Login Link */}
       <TouchableOpacity
         className="items-center"
-        onPress={() => router.replace("../login")}
+        onPress={() => router.replace("./Login")}
       >
         <Text className="text-center text-sm text-gray-600 underline">
           Đã có tài khoản? Đăng nhập

@@ -39,11 +39,11 @@ export default function FloatingButton() {
         ]}
       >
         <Pressable
-          onPress={() => router.push("/user/screens/Notifications")} // dẫn đến trang khiếu nại
+          onPress={() => router.push("/(user)/Notifications")} // dẫn đến trang khiếu nại
           style={{ width: 60, height: 60 }}
         >
           <Image
-            source={require("../../assets/images/Logo4Bros.png")}
+            source={require("@/assets/images/Logo4Bros.png")}
             style={{ width: "100%", height: "100%", borderRadius: 30 }}
             resizeMode="contain"
           />

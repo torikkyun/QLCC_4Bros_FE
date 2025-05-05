@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 import { Room } from "@/api/types/room.types";
 import { roomService } from "@/api/services/room.service";
 

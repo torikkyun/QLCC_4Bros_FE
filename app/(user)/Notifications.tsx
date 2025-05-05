@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { ArrowLeftIcon } from "react-native-heroicons/outline";
 import { useRouter } from "expo-router";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface NotificationItem {
