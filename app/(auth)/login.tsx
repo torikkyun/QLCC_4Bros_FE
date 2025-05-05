@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Eye, EyeOff } from "lucide-react-native";
 import { router } from "expo-router";
-import { useLogin } from "./login.hook";
+import { useLogin } from "@/hooks/useLogin";
 
 export default function LoginScreen() {
   const {
@@ -105,7 +105,7 @@ export default function LoginScreen() {
       <Text className="text-center text-sm mb-2">Chưa có tài khoản?</Text>
       <TouchableOpacity
         className="bg-black py-3 rounded-md"
-        onPress={() => router.push("../sign-up")}
+        onPress={() => router.push("./SignUp")}
       >
         <Text className="text-white text-center font-semibold">
           Tạo một tài khoản mới

@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useRoomList } from "../hooks/RoomList.hook";
-import BottomTabs from "@/app/components/BottomTabs";
+import { useRoomList } from "../../hooks/useRoomList";
+import BottomTabs from "@/components/BottomTabs";
 
 export default function RoomListScreen() {
   const router = useRouter();

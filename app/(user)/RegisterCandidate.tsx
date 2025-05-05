@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 
 const RegisterScreen = () => {
   return (

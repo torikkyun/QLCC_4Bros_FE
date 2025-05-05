@@ -5,21 +5,21 @@ import * as SecureStore from "expo-secure-store";
 const BASE_URL = "http://103.167.89.178:3000/api";
 
 async function getToken(): Promise<string | null> {
-  if (Platform.OS === "web") {
-    return await AsyncStorage.getItem("userToken");
-  } else {
-    return await SecureStore.getItemAsync("userToken");
-  }
+  // if (Platform.OS === "web") {
+  return await AsyncStorage.getItem("userToken");
+  // } else {
+  //   return await SecureStore.getItemAsync("userToken");
+  // }
 }
 
 export async function getOngoingElectionId(): Promise<number | null> {
   const token = await getToken();
-  const res = await fetch(`${BASE_URL}/election?page=1&limit=10&order=desc`, {
+  const res = await fetch(`${BASE_URL}/election`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-
+  console.log(res);
   if (!res.ok) throw new Error("Failed to fetch election list");
 
   const json = await res.json();

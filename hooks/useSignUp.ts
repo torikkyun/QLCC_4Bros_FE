@@ -1,50 +1,64 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import { login } from "./login.service";
-import { jwtDecode } from "jwt-decode";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-interface JwtPayload {
-  user_id: number;
-  email: string;
-  role: "manager" | "user";
-  iat: number;
-  exp: number;
-}
+import { signUp } from "@/api/services/signUp.service";
 
 interface FormData {
   email: string;
   password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface FormErrors {
   email?: string;
   password?: string;
+  confirmPassword?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
-export const useLogin = () => {
+export const useSignUp = () => {
   const router = useRouter();
   const [form, setForm] = useState<FormData>({
     email: "",
     password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
+    // Validate email
     if (!form.email.trim()) {
       newErrors.email = "Email không được để trống";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Email không hợp lệ";
     }
 
+    // Validate password
     if (!form.password) {
       newErrors.password = "Mật khẩu không được để trống";
     } else if (form.password.length < 6) {
       newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+    }
+
+    // Validate confirm password
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Mật khẩu không khớp";
+    }
+
+    // Validate name
+    if (!form.firstName.trim()) {
+      newErrors.firstName = "Họ không được để trống";
+    }
+    if (!form.lastName.trim()) {
+      newErrors.lastName = "Tên không được để trống";
     }
 
     setErrors(newErrors);
@@ -68,32 +82,20 @@ export const useLogin = () => {
     setServerError(null);
 
     try {
-      const response = await login(form);
+      const { confirmPassword, ...submitData } = form;
+      const response = await signUp(submitData);
 
-      // Giải mã accessToken
-      const decoded: JwtPayload = jwtDecode(response.accessToken);
+      // Lưu token vào AsyncStorage nếu cần
+      // await AsyncStorage.setItem('userToken', response.accessToken);
 
-      // Lưu token nếu cần
-      await AsyncStorage.setItem("userToken", response.accessToken);
-
-      // Điều hướng tuỳ theo vai trò
-      if (decoded.role === "manager") {
-        router.replace("./admin/screens/TenantListScreen");
-      } else if (decoded.role === "user") {
-        router.replace("../user/screens/HomeUser");
-      } else {
-        setServerError("Không xác định được vai trò người dùng");
-      }
+      // Chuyển hướng sau khi đăng ký thành công
+      router.replace("../user/screen/home-user");
     } catch (error: any) {
-      console.error("Login error:", error);
-      setServerError(error.message || "Lỗi đăng nhập");
+      console.error("Sign up error:", error);
+      setServerError(error.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
   };
 
   return {
@@ -101,9 +103,7 @@ export const useLogin = () => {
     errors,
     isLoading,
     serverError,
-    showPassword,
     handleChange,
     handleSubmit,
-    toggleShowPassword,
   };
 };

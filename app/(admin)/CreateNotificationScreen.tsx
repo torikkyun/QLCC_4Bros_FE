@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import BottomTabsAdmin from "@/app/components/BottomTabsAdmin";
+import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
 // Định nghĩa giao diện Notification
 interface Notification {

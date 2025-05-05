@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getElectionResults,
   getOngoingElectionId,
-} from "../services/HomeUser.service";
+} from "@/api/services/homeUser.service";
 
 export function useHomeUser() {
   const [candidate, setCandidate] = useState<{

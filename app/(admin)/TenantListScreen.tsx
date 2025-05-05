@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BottomTabsAdmin from "@/app/components/BottomTabsAdmin";
+import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
 // Định nghĩa kiểu cho user trong API
 interface ApiUser {

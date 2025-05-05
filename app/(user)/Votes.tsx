@@ -9,7 +9,7 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 
 // Dữ liệu mẫu cho danh sách người dùng
 const users = [

@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { ArrowLeftIcon, Bars3Icon } from "react-native-heroicons/outline";
-import BottomTabs from "@/app/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 
 export default function PaymentSuccess() {
   const router = useRouter();

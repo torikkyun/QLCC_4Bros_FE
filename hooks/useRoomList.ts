@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchRooms, deleteRoom } from "../services/RoomList.service";
+import { fetchRooms, deleteRoom } from "@/api/services/roomList.service";
 
 export function useRoomList() {
   const [rooms, setRooms] = useState<any[]>([]);
