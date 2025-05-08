@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet,Modal } from 'react-native';
 import { useElectionList } from '../hooks/electionList.hook';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -9,6 +10,15 @@ const getStatusColor = (status: string) => {
     case 'ongoing': return '#D97706';  // Cam
     case 'completed': return '#0CA678'; // Xanh lá
     default: return '#ccc';
+  }
+};
+
+const saveElectionId = async (id: string | number) => {
+  try {
+    await AsyncStorage.setItem('selectedElectionId', id.toString());
+    console.log('Election ID saved:', id);
+  } catch (e) {
+    console.error('Failed to save election ID:', e);
   }
 };
 
@@ -58,7 +68,7 @@ const ElectionList = () => {
               <Text style={styles.electionId}>{String(election.id).padStart(2, '0')}</Text>
               <Text style={styles.date}>{election.startDate} - {election.endDate}</Text>
   
-              <TouchableOpacity onPress={() => openModal(election.description)}>
+              <TouchableOpacity onPress={() => saveElectionId(election.id)}>
                 <Text style={styles.moreInfo}>Mô Tả</Text>
               </TouchableOpacity>
   
