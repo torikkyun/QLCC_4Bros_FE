@@ -4,7 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
-// Định nghĩa giao diện Notification
 interface Notification {
   id: number;
   title: string;
@@ -17,14 +16,14 @@ const CreateNotificationScreen: React.FC = () => {
   const router = useRouter();
   const [message, setMessage] = useState("");
 
-  // Lấy ngày hiện tại dưới định dạng "dd/mm/yyyy"
-  const currentDate = new Date().toLocaleDateString("vi-VN", {
+  // Lấy ngày hiện tại
+  const currentDate = new Date().toISOString().split("T")[0]; // e.g., "2025-05-08"
+  const displayDate = new Date().toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-  });
+  }); // e.g., "08/05/2025"
 
-  // Hàm tạo thông báo mới
   const createNotification = async () => {
     if (!message.trim()) {
       Alert.alert("Lỗi", "Nội dung thông báo không được để trống!");
@@ -35,7 +34,7 @@ const CreateNotificationScreen: React.FC = () => {
       id: Date.now(),
       title: "Thông báo chung",
       message: message.trim(),
-      date: currentDate,
+      date: currentDate, // Lưu dưới dạng ISO
       read: false,
     };
 
@@ -50,13 +49,14 @@ const CreateNotificationScreen: React.FC = () => {
         "notifications",
         JSON.stringify(updatedNotifications)
       );
+      console.log("Saved notifications:", updatedNotifications); // Debug
 
       Alert.alert("Thành công", "Thông báo đã được tạo!", [
         {
           text: "OK",
           onPress: () => {
             setMessage("");
-            router.push("/(admin)/CreateNotificationScreen");
+            router.push("/(admin)/Notification"); // Chuyển đến danh sách
           },
         },
       ]);
@@ -68,13 +68,10 @@ const CreateNotificationScreen: React.FC = () => {
 
   return (
     <View className="flex-1 bg-white">
-      {/* Header */}
       <View className="p-4 border-b border-gray-200">
         <Text className="text-xl font-bold">Thông báo chung</Text>
-        <Text className="text-gray-500 mt-1">Thông báo: {currentDate}</Text>
+        <Text className="text-gray-500 mt-1">Thông báo: {displayDate}</Text>
       </View>
-
-      {/* Ô nhập nội dung thông báo */}
       <View className="p-4 flex-1">
         <TextInput
           className="border border-gray-300 rounded p-2 h-40 bg-white"
@@ -85,8 +82,6 @@ const CreateNotificationScreen: React.FC = () => {
           textAlignVertical="top"
         />
       </View>
-
-      {/* Nút "Tạo Thông Báo" */}
       <View className="p-4">
         <TouchableOpacity
           className="bg-purple-500 py-3 rounded-lg"

@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-
-// Định nghĩa giao diện Notification
+import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 interface Notification {
   id: number;
   title: string;
@@ -27,22 +26,35 @@ const NotificationListScreen: React.FC = () => {
   const [currentEditId, setCurrentEditId] = useState<number | null>(null);
   const [editMessage, setEditMessage] = useState("");
 
-  // Load thông báo từ AsyncStorage khi khởi động
   useEffect(() => {
     const loadNotifications = async () => {
       try {
         const savedNotifications = await AsyncStorage.getItem("notifications");
         if (savedNotifications) {
-          setNotifications(JSON.parse(savedNotifications));
+          let parsed = JSON.parse(savedNotifications);
+
+          // Chuyển đổi định dạng ngày cũ sang ISO
+          parsed = parsed.map((notif: Notification) => {
+            if (notif.date.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+              const [day, month, year] = notif.date.split("/");
+              return { ...notif, date: `${year}-${month}-${day}` }; // e.g., "2025-05-08"
+            }
+            return notif;
+          });
+
+          console.log("Loaded notifications:", parsed);
+          setNotifications(parsed);
+          // Lưu lại dữ liệu đã chuyển đổi
+          await AsyncStorage.setItem("notifications", JSON.stringify(parsed));
         }
       } catch (error) {
         console.error("Lỗi khi tải thông báo:", error);
+        Alert.alert("Lỗi", "Không thể tải thông báo!");
       }
     };
     loadNotifications();
   }, []);
 
-  // Lưu thông báo vào AsyncStorage mỗi khi danh sách thay đổi
   useEffect(() => {
     const saveNotifications = async () => {
       try {
@@ -59,7 +71,6 @@ const NotificationListScreen: React.FC = () => {
     }
   }, [notifications]);
 
-  // Xóa thông báo
   const deleteNotification = (id: number) => {
     Alert.alert("Xác nhận", "Bạn có chắc chắn muốn xóa thông báo này?", [
       { text: "Hủy", style: "cancel" },
@@ -73,14 +84,12 @@ const NotificationListScreen: React.FC = () => {
     ]);
   };
 
-  // Mở modal chỉnh sửa
   const openEditModal = (id: number, message: string) => {
     setCurrentEditId(id);
     setEditMessage(message);
     setModalVisible(true);
   };
 
-  // Lưu thông báo đã chỉnh sửa
   const saveEditedNotification = () => {
     if (currentEditId === null || !editMessage.trim()) {
       Alert.alert("Lỗi", "Nội dung thông báo không được để trống!");
@@ -99,26 +108,32 @@ const NotificationListScreen: React.FC = () => {
 
   // Nhóm thông báo theo ngày
   const groupedNotifications = notifications.reduce((acc, notif) => {
-    const date = new Date(notif.date).toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-    if (!acc[date]) {
-      acc[date] = [];
+    try {
+      const dateObj = new Date(notif.date); // Expecting "2025-05-08"
+      if (isNaN(dateObj.getTime())) {
+        console.warn(`Invalid date for notification ${notif.id}: ${notif.date}`);
+        return acc; // Bỏ qua thông báo có ngày không hợp lệ
+      }
+      const date = dateObj.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }); // e.g., "08/05/2025"
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(notif);
+    } catch (error) {
+      console.warn(`Error parsing date for notification ${notif.id}:`, error);
     }
-    acc[date].push(notif);
     return acc;
   }, {} as { [key: string]: Notification[] });
 
   return (
     <View className="flex-1 bg-white">
-      {/* Header */}
       <View className="p-4 border-b border-gray-200">
         <Text className="text-xl font-bold">Thông báo chung</Text>
       </View>
-
-      {/* Danh sách thông báo */}
       <ScrollView className="flex-1 p-4">
         {Object.keys(groupedNotifications).length === 0 ? (
           <Text className="text-gray-500 text-center">
@@ -150,8 +165,6 @@ const NotificationListScreen: React.FC = () => {
           ))
         )}
       </ScrollView>
-
-      {/* Modal chỉnh sửa */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
           <View className="bg-white p-4 rounded-lg w-4/5">
@@ -180,30 +193,8 @@ const NotificationListScreen: React.FC = () => {
           </View>
         </View>
       </Modal>
-
-      {/* Thanh điều hướng dưới cùng */}
-      <View className="flex-row justify-around py-3 border-t border-gray-200 bg-white">
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => router.push("./TenantListScreen")}
-        >
-          <Text className="text-blue-500">Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center">
-          <Text className="text-gray-500">User List</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => router.push("./CreateNotificationScreen")}
-        >
-          <Text className="text-3xl text-purple-500">+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center">
-          <Text className="text-gray-500">Room List</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center">
-          <Text className="text-gray-500">Profile</Text>
-        </TouchableOpacity>
+      <View>
+        <BottomTabsAdmin/>
       </View>
     </View>
   );

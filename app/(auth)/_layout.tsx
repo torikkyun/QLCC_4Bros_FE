@@ -19,10 +19,10 @@ export default function AuthLayout() {
         });
         if (!rooms.data) {
           await AsyncStorage.removeItem("userToken");
-          router.replace("./Login");
+          router.replace("/(admin)/TenantListScreen");
           return;
         }
-        router.replace("/(user)/HomeUser");
+        router.replace("/(admin)/TenantListScreen");
       }
     } catch (error) {
       console.error("Lỗi khi kiểm tra trạng thái đăng nhập:", error);

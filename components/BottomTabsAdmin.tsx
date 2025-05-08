@@ -10,9 +10,9 @@ export default function BottomTabsAdmin() {
 
   const tabs = [
     {
-      label: "Home",
+      label: "TenantList",
       icon: <Ionicons name="home-outline" size={24} />,
-      path: "/user/home-user",
+      path: "/(admin)/TenantListScreen",
     },
     {
       label: "User List",
