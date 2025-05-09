@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { ArrowLeftIcon, Bars3Icon } from "react-native-heroicons/outline";
-import BottomTabs from "../../components/BottomTabs";
+import BottomTabs from "@/components/BottomTabs";
 
 export default function PaymentSuccess() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function PaymentSuccess() {
 
           {/* Button */}
           <TouchableOpacity
-            onPress={() => router.replace("/")}
+            onPress={() => router.replace("./admin/screens/notification")}
             className="bg-emerald-400 w-full py-3 rounded-xl"
           >
             <Text className="text-white font-semibold text-center">
