@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
-import { Room } from "@/api/types/room.types";
-import { roomService } from "@/api/services/room.service";
+import { Room } from "@/api/types/rooms.types";
+import { roomsService } from "@/api/services/rooms.service";
 import { router } from "expo-router";
 
 const RoomScreen = () => {
@@ -32,7 +32,7 @@ const RoomScreen = () => {
     setError(null);
 
     try {
-      const response = await roomService.getRooms({
+      const response = await roomsService.getRooms({
         status: statusQuery,
         page: 1,
         limit: 10,

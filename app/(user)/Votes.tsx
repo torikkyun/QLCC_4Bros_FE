@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,50 +7,70 @@ import {
   SafeAreaView,
   Dimensions,
   FlatList,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-
-// Dữ liệu mẫu cho danh sách người dùng
-const users = [
-  {
-    id: "1",
-    name: "Daniel",
-    score: 9,
-    description: "Description...",
-    image: require("@/assets/images/daniel.jpg"),
-  },
-  {
-    id: "2",
-    name: "Emma",
-    score: 8,
-    description: "Description...",
-    image: require("@/assets/images/fubuki.jpg"),
-  },
-  {
-    id: "3",
-    name: "Michael",
-    score: 7,
-    description: "Description...",
-    image: require("@/assets/images/fubuki.jpg"),
-  },
-];
+import { router, useLocalSearchParams } from "expo-router";
+import { electionsService } from "@/api/services/elections.service";
+import { useVotes } from "@/hooks/useVotes";
 
 const { width } = Dimensions.get("window");
 
 const VotesScreen = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  // const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = React.useRef<FlatList>(null);
+  // const [candidates, setCandidates] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  const { id } = useLocalSearchParams();
+  const {
+    activeIndex,
+    setActiveIndex,
+    candidates,
+    loading,
+    voting,
+    handleVote,
+    hasVoted,
+    electionStatus,
+  } = useVotes(id);
 
-  const renderUser = ({
-    item,
-    index,
-  }: {
-    item: (typeof users)[0];
-    index: number;
-  }) => {
+  const goToPrevious = () => {
+    if (activeIndex > 0) {
+      flatListRef.current?.scrollToIndex({
+        index: activeIndex - 1,
+        animated: true,
+      });
+    }
+  };
+
+  const goToNext = () => {
+    if (activeIndex < candidates.length - 1) {
+      flatListRef.current?.scrollToIndex({
+        index: activeIndex + 1,
+        animated: true,
+      });
+    }
+  };
+
+  const renderUser = ({ item, index }: { item: any; index: number }) => {
+    const handleVoteConfirmation = () => {
+      Alert.alert(
+        "Xác nhận bình chọn",
+        `Bạn có chắc chắn muốn bình chọn cho ${item.user.firstName} ${item.user.lastName}?`,
+        [
+          {
+            text: "Hủy",
+            style: "cancel",
+          },
+          {
+            text: "Đồng ý",
+            onPress: () => handleVote(item.candidateId),
+          },
+        ]
+      );
+    };
+
     return (
       <View style={{ width }} className="items-center px-4">
         <LinearGradient
@@ -62,7 +82,7 @@ const VotesScreen = () => {
           {/* Ảnh người dùng */}
           <View className="p-4">
             <Image
-              source={item.image}
+              source={require("@/assets/images/fubuki.jpg")}
               className="w-full h-48 rounded-lg"
               resizeMode="cover"
             />
@@ -70,17 +90,41 @@ const VotesScreen = () => {
 
           {/* Thông tin người dùng */}
           <View className="items-center px-4 mt-2">
-            <Text className="text-white text-2xl font-bold">{item.name}</Text>
+            <Text className="text-white text-2xl font-bold">
+              {item.user.firstName} {item.user.lastName}
+            </Text>
             <Text className="text-white text-base">
-              Điểm bình chọn: {item.score}
+              Điểm bình chọn: {item.voteCount}
             </Text>
             <Text className="text-white text-sm mt-1">{item.description}</Text>
           </View>
 
           {/* Nút bình chọn */}
-          <View className="items-center mt-4 pb-2">
-            <TouchableOpacity className="bg-white rounded-full py-3 px-8">
-              <Text className="text-[#6246EA] font-bold">Bình Chọn</Text>
+          <View className="items-center mt-24 pb-2">
+            <TouchableOpacity
+              className={`rounded-full py-3 px-8 ${
+                hasVoted || electionStatus === "completed"
+                  ? "bg-gray-300"
+                  : "bg-white"
+              }`}
+              onPress={handleVoteConfirmation}
+              disabled={voting || hasVoted || electionStatus === "completed"}
+            >
+              <Text
+                className={`font-bold ${
+                  hasVoted || electionStatus === "completed"
+                    ? "text-gray-600"
+                    : "text-[#6246EA]"
+                }`}
+              >
+                {voting
+                  ? "Đang xử lý..."
+                  : hasVoted
+                  ? "Đã bình chọn"
+                  : electionStatus === "completed"
+                  ? "Đã kết thúc"
+                  : "Bình Chọn"}
+              </Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -99,35 +143,75 @@ const VotesScreen = () => {
           <Text className="text-xl font-bold ml-2">Bình chọn</Text>
         </View>
         <TouchableOpacity className="bg-teal-500 rounded-full px-4 py-1">
-          <Text className="text-white font-medium">Đăng ký</Text>
+          <Text className="text-white font-medium">Đăng ký ứng cử viên</Text>
         </TouchableOpacity>
       </View>
 
       {/* Khoảng trống phía trên */}
       <View className="flex-1" />
 
-      {/* Danh sách người dùng */}
+      {/* Danh sách người dùng với nút điều hướng */}
       <View className="flex-2 justify-center">
-        <FlatList
-          ref={flatListRef}
-          data={users}
-          renderItem={renderUser}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onMomentumScrollEnd={(event) => {
-            const newIndex = Math.round(
-              event.nativeEvent.contentOffset.x / width
-            );
-            setActiveIndex(newIndex);
-          }}
-          getItemLayout={(_, index) => ({
-            length: width,
-            offset: width * index,
-            index,
-          })}
-        />
+        {/* Nút mũi tên trái */}
+        {activeIndex > 0 && (
+          <TouchableOpacity
+            onPress={goToPrevious}
+            className="absolute left-2 z-10 bg-white/50 rounded-full p-2"
+            style={{ top: "50%", transform: [{ translateY: -20 }] }}
+          >
+            <Ionicons name="chevron-back" size={30} color="#6246EA" />
+          </TouchableOpacity>
+        )}
+        {loading ? (
+          <View className="items-center justify-center">
+            <Text>Đang tải...</Text>
+          </View>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={candidates}
+            renderItem={renderUser}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(event) => {
+              const newIndex = Math.round(
+                event.nativeEvent.contentOffset.x / width
+              );
+              setActiveIndex(newIndex);
+            }}
+            getItemLayout={(_, index) => ({
+              length: width,
+              offset: width * index,
+              index,
+            })}
+          />
+        )}
+        {/* Nút mũi tên phải */}
+        {activeIndex < candidates.length - 1 && (
+          <TouchableOpacity
+            onPress={goToNext}
+            className="absolute right-2 z-10 bg-white/50 rounded-full p-2"
+            style={{ top: "50%", transform: [{ translateY: -20 }] }}
+          >
+            <Ionicons name="chevron-forward" size={30} color="#6246EA" />
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Chỉ báo trang hiện tại */}
+      {!loading && (
+        <View className="flex-row justify-center mt-4">
+          {candidates.map((_, index) => (
+            <View
+              key={index}
+              className={`h-2 w-2 rounded-full mx-1 ${
+                index === activeIndex ? "bg-[#6246EA]" : "bg-gray-300"
+              }`}
+            />
+          ))}
+        </View>
+      )}
 
       {/* Khoảng trống phía dưới */}
       <View className="flex-1" />

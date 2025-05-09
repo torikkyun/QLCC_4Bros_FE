@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { roomService } from "@/api/services/room.service";
+import { candidatesService } from "@/api/services/candidates.service";
 
 export default function AuthLayout() {
   useEffect(() => {
@@ -13,11 +13,15 @@ export default function AuthLayout() {
     try {
       const userToken = await AsyncStorage.getItem("userToken");
       if (userToken) {
-        const rooms = await roomService.getRooms({
+        const candidates = await candidatesService.getCandidates({
           page: 1,
           limit: 1,
         });
-        if (!rooms.data) {
+        // const candidates = {
+        //   statusCode: 401,
+        //   message: "Unauthorized",
+        // };
+        if (candidates.statusCode == 401) {
           await AsyncStorage.removeItem("userToken");
           router.replace("./Login");
           return;

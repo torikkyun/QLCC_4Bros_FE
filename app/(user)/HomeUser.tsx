@@ -14,7 +14,7 @@ import FloatingButton from "@/components/FloatingButton";
 import { useHomeUser } from "@/hooks/useHomeUser";
 
 export default function HomeScreen() {
-  const { candidate, loading, error } = useHomeUser();
+  const { candidate, loading, error, electionId } = useHomeUser();
 
   return (
     <View style={{ flex: 1 }}>
@@ -60,7 +60,12 @@ export default function HomeScreen() {
                   </Text>
                   <Pressable
                     style={styles.voteButton}
-                    onPress={() => router.push("./Votes")}
+                    onPress={() =>
+                      router.push({
+                        pathname: "./Votes",
+                        params: { id: electionId },
+                      })
+                    }
                   >
                     <Text style={styles.voteButtonText}>Bình Chọn</Text>
                   </Pressable>
@@ -91,7 +96,7 @@ export default function HomeScreen() {
               </Text>
               <Pressable
                 style={styles.payButton}
-                // onPress={() => router.push("./Payment")}
+                onPress={() => router.push("./Payment")}
               >
                 <Text style={styles.payButtonText}>Thanh Toán</Text>
               </Pressable>

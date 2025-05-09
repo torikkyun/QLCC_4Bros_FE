@@ -13,6 +13,7 @@ export function useHomeUser() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [electionId, setElectionId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -23,6 +24,7 @@ export function useHomeUser() {
           setError("Không tìm thấy election đang hoạt động.");
           return;
         }
+        setElectionId(electionId);
 
         const results = await getElectionResults(electionId);
         if (results.length > 0) {
@@ -47,5 +49,5 @@ export function useHomeUser() {
     fetchCandidate();
   }, []);
 
-  return { candidate, loading, error };
+  return { candidate, loading, error, electionId };
 }
