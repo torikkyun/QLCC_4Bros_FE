@@ -1,4 +1,4 @@
-import { getToken } from '../../(auth)/authStorage';
+import { getToken } from '../../app/(auth)/authStorage';
 
 const API_URL = 'http://103.167.89.178:3000/api/user?page=1&limit=10&order=desc';
 

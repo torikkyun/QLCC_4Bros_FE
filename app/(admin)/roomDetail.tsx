@@ -7,8 +7,11 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Pressable
 } from 'react-native';
+import { useRouter } from "expo-router";
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons, Feather } from "@expo/vector-icons";
 
 export default function InputLayout() {
   const [image, setImage] = useState<string | null>(null);
@@ -23,9 +26,17 @@ export default function InputLayout() {
       setImage(result.assets[0].uri);
     }
   };
-
+const router= useRouter();
   return (
     <View style={{ flex: 1 }}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 py-4">
+        <Pressable onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </Pressable>
+        <Text className="text-lg font-bold">4Bros</Text>
+        <Feather name="menu" size={24} color="black" />
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Welcome!</Text>
         <View style={styles.container}>

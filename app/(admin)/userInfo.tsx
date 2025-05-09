@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
-import { fetchRoomByEmail } from '../services/room.service'; // Đảm bảo đường dẫn đúng
+import { FontAwesome5, Ionicons, Feather  } from '@expo/vector-icons';
+import { fetchRoomByEmail } from '../../api/services/roomByEmail.service';
+import { useRouter } from "expo-router";
+import BottomTabsAdmin from '@/components/BottomTabsAdmin';
 
 export default function RoomDetail() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [room, setRoom] = useState<any>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchUserData = async () => {
       const name = await AsyncStorage.getItem('selectedUserName');
@@ -25,6 +27,15 @@ export default function RoomDetail() {
 
   return (
     <View className="flex-1 bg-white px-4 pt-4">
+            {/* Header */}
+            <View className="flex-row items-center justify-between px-4 py-4">
+        <Pressable onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </Pressable>
+        <Text className="text-lg font-bold">4Bros</Text>
+        <Feather name="menu" size={24} color="black" />
+      </View>
+
       {/* User Info */}
       <View className="flex-row items-center mb-6">
         <Image
@@ -70,6 +81,7 @@ export default function RoomDetail() {
           {room?.description || 'Không có ghi chú'}
         </Text>
       </View>
+      <BottomTabsAdmin />
     </View>
   );
 }

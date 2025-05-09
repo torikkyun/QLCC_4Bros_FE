@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, TextInput, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
-import { useUserList } from '../hooks/userList.hook';
+import { useUserList } from '../../hooks/userList.hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; 
-
+import BottomTabsAdmin from '@/components/BottomTabsAdmin';
+import {Ionicons, Feather  } from '@expo/vector-icons';
 export default function UserList() {
   const { users, loading, error } = useUserList();
   const router = useRouter(); // dùng để điều hướng
@@ -16,11 +17,20 @@ export default function UserList() {
   };
   return (
     <View className="flex-1 bg-white px-4 pt-4">
-      <Text className="text-center text-lg font-semibold text-gray-800 mb-4">Tenant List</Text>
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-4 py-4">
+        <Pressable onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </Pressable>
+        <Text className="text-lg font-bold">4Bros</Text>
+        <Feather name="menu" size={24} color="black" />
+      </View>
+
+      <Text className="text-center text-lg font-semibold text-gray-800 mb-4">Danh sách người dùng</Text>
 
       <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mb-4">
         <TextInput
-          placeholder="Search address, city, location"
+          placeholder="Search name, email, id"
           className="flex-1 text-gray-700"
         />
         <Text className="text-gray-500 text-xl">🔍</Text>
@@ -33,7 +43,7 @@ export default function UserList() {
         data={users}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View className="bg-blue-100 p-4 rounded-xl mb-3">
+          <View className="bg-blue-100 p-4 rounded-xl mb-3" >
             <View className="flex-row justify-between items-center mb-2">
               <View className="flex-row items-center">
                 <Image
@@ -60,7 +70,9 @@ export default function UserList() {
             </View>
           </View>
         )}
-      />
+        />
+        <BottomTabsAdmin/>
     </View>
+    
   );
 }

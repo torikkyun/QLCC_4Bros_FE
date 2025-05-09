@@ -8,15 +8,32 @@ import {
   ScrollView,
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from "expo-router";
-import BottomTabs from "../../components/BottomTabs";
+import { useRouter } from "expo-router";
+import BottomTabs from "../../components/BottomTabsAdmin";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
 import { AlignCenter } from "lucide-react-native";
+import BottomTabsAdmin from "../../components/BottomTabsAdmin";
+import { useRoomList } from "@/hooks/useRoomList";
+
+const router = useRouter();
+
 
 export default function HomeScreen() {
+  const {rooms, loading, error} = useRoomList();
+  const safeRooms = Array.isArray(rooms) ? rooms : [];
+  const vacantCount = safeRooms.filter((room) => room.status === "vacant").length;
+  const occupiedCount = safeRooms.filter((room) => room.status === "occupied").length;
   return (
     <View style={{ flex: 1 }}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 py-4">
+        <Pressable onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </Pressable>
+        <Text className="text-lg font-bold">4Bros</Text>
+        <Feather name="menu" size={24} color="black" />
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Welcome!</Text>
 
@@ -30,7 +47,7 @@ export default function HomeScreen() {
                 style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
             /> 
                 <Text style={[styles.tabText, { color: "white" }]}>Phòng trống</Text>
-                <Text style={[styles.tabBottomNum,{color:"#2DB398"}]}>1</Text>   
+                <Text style={[styles.tabBottomNum,{color:"#2DB398"}]}>{vacantCount}</Text>   
         </Pressable>
         <Pressable style={styles.tabButton}>
             <LinearGradient
@@ -40,15 +57,15 @@ export default function HomeScreen() {
                 style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
             /> 
                 <Text style={[styles.tabText, { color: "white" }]}>Phòng đã thuê</Text>
-                <Text style={[styles.tabBottomNum,{color:"#E65D4A"}]}>1</Text>   
+                <Text style={[styles.tabBottomNum,{color:"#E65D4A"}]}>{occupiedCount}</Text>   
         </Pressable>
-        <Pressable style={[styles.tabButton, {height:135}]}>
+        <Pressable style={[styles.tabButton, {height:135}]} onPress={() => router.push('/electionList')}>
             <View style={{justifyContent: 'center', alignItems: 'center',}}>
                 <FontAwesome5 name="vote-yea" size={32} color="black" />
                 <Text style={[styles.tabText, { color: "black", marginTop: 8 }]}>Bầu cử</Text>
             </View>
         </Pressable>
-        <Pressable style={[styles.tabButton, {height:135}]}>
+        <Pressable style={[styles.tabButton, {height:135}]} onPress={() => router.push('/Notification')}>
             <View style={{justifyContent: 'center', alignItems: 'center',}}>
                 <FontAwesome5 name="bell" size={32} color="black" />
                 <Text style={[styles.tabText, { color: "black", marginTop: 8 }]}>Danh sách thông báo</Text>
@@ -65,7 +82,7 @@ export default function HomeScreen() {
         </View>
 
       </ScrollView>
-      <BottomTabs />
+      <BottomTabsAdmin />
     </View>
   );
 }

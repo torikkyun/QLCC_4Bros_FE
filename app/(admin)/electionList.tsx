@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet,Modal } from 'react-native';
-import { useElectionList } from '../hooks/electionList.hook';
+import { useElectionList } from '../../hooks/electionList.hook';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import BottomTabsAdmin from '@/components/BottomTabsAdmin';
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'upcoming': return '#15AABF'; // Xanh lam

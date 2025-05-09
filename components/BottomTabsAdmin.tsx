@@ -12,12 +12,12 @@ export default function BottomTabsAdmin() {
     {
       label: "Home",
       icon: <Ionicons name="home-outline" size={24} />,
-      path: "/user/home-user",
+      path: "/home-admin",
     },
     {
       label: "User List",
       icon: <Feather name="users" size={24} />,
-      path: "/user/user-list",
+      path: "/userList",
     },
     {
       label: "", // No label for the "+" button
@@ -28,7 +28,7 @@ export default function BottomTabsAdmin() {
     {
       label: "Room List",
       icon: <Ionicons name="bed-outline" size={24} />, // Using bed-outline as a placeholder for "Room List"
-      path: "/user/room-list",
+      path: "/RoomList",
     },
     {
       label: "Profile",

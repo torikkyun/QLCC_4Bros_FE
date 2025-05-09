@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchElections } from '../services/electionList.service';
+import { fetchElections } from '../api/services/electionList.service';
 
 export type Election = {
     id: number;

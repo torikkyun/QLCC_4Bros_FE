@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchUsers } from '../services/userList.service';
+import { fetchUsers } from '../api/services/userList.service';
 
 export type User = {
   id: number;
