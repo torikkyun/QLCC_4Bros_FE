@@ -16,7 +16,6 @@ import { router } from "expo-router";
 const RoomScreen = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [buttonColor, setButtonColor] = useState<
     "vacant" | "occupied" | undefined
@@ -28,7 +27,6 @@ const RoomScreen = () => {
 
   const fetchRooms = async (status?: "vacant" | "occupied" | undefined) => {
     setLoading(true);
-    setError(null);
 
     try {
       const response = await roomsService.getRooms({
@@ -41,7 +39,6 @@ const RoomScreen = () => {
       setLoading(false);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu phòng:", err);
-      setError("Không thể tải dữ liệu phòng");
       setLoading(false);
     }
   };
@@ -70,7 +67,6 @@ const RoomScreen = () => {
       fetchRooms(status);
     } catch (err) {
       console.error("Lỗi khi lọc phòng:", err);
-      setError("Không thể lọc phòng");
     } finally {
       setLoading(false);
     }
