@@ -28,7 +28,7 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable
             style={styles.tabButton}
-            // onPress={() => router.push("../DanhSachPhong")}
+            onPress={() => router.push("./Rooms")}
           >
             <Text style={styles.inactiveTabText}>Danh sách phòng</Text>
           </Pressable>
@@ -60,7 +60,7 @@ export default function HomeScreen() {
                   </Text>
                   <Pressable
                     style={styles.voteButton}
-                    // onPress={() => router.push("../BauCu")}
+                    onPress={() => router.push("./Votes")}
                   >
                     <Text style={styles.voteButtonText}>Bình Chọn</Text>
                   </Pressable>

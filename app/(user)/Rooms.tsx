@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
 import { Room } from "@/api/types/room.types";
 import { roomService } from "@/api/services/room.service";
+import { router } from "expo-router";
 
 const RoomScreen = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -83,10 +84,14 @@ const RoomScreen = () => {
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="flex-row justify-between items-center px-4 py-3">
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.back();
+          }}
+        >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-xl font-bold">Rentaxo</Text>
+        <Text className="text-xl font-bold">4Bros</Text>
         <TouchableOpacity>
           <Ionicons name="menu" size={24} color="black" />
         </TouchableOpacity>
@@ -109,7 +114,7 @@ const RoomScreen = () => {
       </View>
 
       {/* Nút lọc theo trạng thái */}
-      <View className="flex-row justify-center space-x-2 mb-4 px-4">
+      <View className="flex-row justify-center gap-x-2 mb-4 px-4">
         <TouchableOpacity
           className={`py-2 px-4 rounded-full ${
             statusQuery === undefined ? "bg-blue-500" : "bg-gray-200"

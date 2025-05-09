@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 // Dữ liệu mẫu cho danh sách người dùng
 const users = [
@@ -51,19 +53,23 @@ const VotesScreen = () => {
   }) => {
     return (
       <View style={{ width }} className="items-center px-4">
-        <View className="w-full max-w-3xs bg-gradient-to-br from-[#917AFD] to-[#6246EA] rounded-3xl overflow-hidden p-4">
+        <LinearGradient
+          colors={["#917AFD", "#6246EA"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="w-full max-w-3xs rounded-3xl overflow-hidden p-4"
+        >
           {/* Ảnh người dùng */}
-          <View className="p-2">
+          <View className="p-4">
             <Image
               source={item.image}
-              className="aspect-square self-center rounded-t-lg"
-              style={{ maxHeight: 250 }}
-              resizeMode="contain"
+              className="w-full h-48 rounded-lg"
+              resizeMode="cover"
             />
           </View>
 
           {/* Thông tin người dùng */}
-          <View className="items-center px-4">
+          <View className="items-center px-4 mt-2">
             <Text className="text-white text-2xl font-bold">{item.name}</Text>
             <Text className="text-white text-base">
               Điểm bình chọn: {item.score}
@@ -72,23 +78,23 @@ const VotesScreen = () => {
           </View>
 
           {/* Nút bình chọn */}
-          <View className="items-center mt-24 pb-2">
+          <View className="items-center mt-4 pb-2">
             <TouchableOpacity className="bg-white rounded-full py-3 px-8">
               <Text className="text-[#6246EA] font-bold">Bình Chọn</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </LinearGradient>
       </View>
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-100">
       {/* Header */}
       <View className="flex-row justify-between items-center px-4 py-3">
         <View className="flex-row items-center">
-          <TouchableOpacity>
-            <Ionicons name="chevron-back" size={24} color="black" />
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
           <Text className="text-xl font-bold ml-2">Bình chọn</Text>
         </View>
@@ -97,10 +103,11 @@ const VotesScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-grow" />
+      {/* Khoảng trống phía trên */}
+      <View className="flex-1" />
 
       {/* Danh sách người dùng */}
-      <View className="h-auto">
+      <View className="flex-2 justify-center">
         <FlatList
           ref={flatListRef}
           data={users}
@@ -122,10 +129,13 @@ const VotesScreen = () => {
         />
       </View>
 
-      <View className="flex-grow" />
+      {/* Khoảng trống phía dưới */}
+      <View className="flex-1" />
 
-      <BottomTabs />
-    </SafeAreaView>
+      <View className="mt-auto">
+        <BottomTabs />
+      </View>
+    </View>
   );
 };
 
