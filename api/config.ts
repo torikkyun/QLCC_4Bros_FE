@@ -18,6 +18,7 @@ export const ENDPOINTS = {
   },
   CANDIDATES: {
     LIST: "/candidate",
+    CREATE: "/candidate",
   },
   ELECTIONS: {
     RESULTS: (id: number) => `/election/${id}/results`,

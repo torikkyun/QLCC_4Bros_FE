@@ -17,3 +17,7 @@ export interface CandidateFilterParams {
   page?: number;
   limit?: number;
 }
+
+export interface CandidateCreateRequest {
+  description: string;
+}

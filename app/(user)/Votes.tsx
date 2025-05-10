@@ -148,7 +148,10 @@ const VotesScreen = () => {
           </TouchableOpacity>
           <Text className="text-xl font-bold ml-2">Bình chọn</Text>
         </View>
-        <TouchableOpacity className="bg-teal-500 rounded-full px-4 py-1">
+        <TouchableOpacity
+          className="bg-teal-500 rounded-full px-4 py-1"
+          onPress={() => router.push("./RegisterCandidate")}
+        >
           <Text className="text-white font-medium">Đăng ký ứng cử viên</Text>
         </TouchableOpacity>
       </View>
