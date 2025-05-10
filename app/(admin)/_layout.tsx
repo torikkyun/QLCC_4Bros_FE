@@ -12,6 +12,10 @@ export default function AuthLayout() {
         name="TenantListScreen"
         options={{ title: "Tạo hông Báo" }}
       />
+      <Stack.Screen
+        name="PersonalDetail"
+        options={{ title: "PersonalDetail" }}
+      />
       <Stack.Screen name="notification" options={{ title: "Thông Báo" }} />
     </Stack>
   );

@@ -3,23 +3,18 @@ import {
   View,
   Text,
   Pressable,
-  Image,
   StyleSheet,
   ScrollView,
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
-import BottomTabs from "../../components/BottomTabsAdmin";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
-import { AlignCenter } from "lucide-react-native";
 import BottomTabsAdmin from "../../components/BottomTabsAdmin";
 import { useRoomList } from "@/hooks/useRoomList";
 
-const router = useRouter();
-
 
 export default function HomeScreen() {
+  const router = useRouter();
   const {rooms, loading, error} = useRoomList();
   const safeRooms = Array.isArray(rooms) ? rooms : [];
   const vacantCount = safeRooms.filter((room) => room.status === "vacant").length;
@@ -45,9 +40,9 @@ export default function HomeScreen() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
-            /> 
+            />
                 <Text style={[styles.tabText, { color: "white" }]}>Phòng trống</Text>
-                <Text style={[styles.tabBottomNum,{color:"#2DB398"}]}>{vacantCount}</Text>   
+                <Text style={[styles.tabBottomNum,{color:"#2DB398"}]}>{vacantCount}</Text>
         </Pressable>
         <Pressable style={styles.tabButton}>
             <LinearGradient
@@ -55,9 +50,9 @@ export default function HomeScreen() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
-            /> 
+            />
                 <Text style={[styles.tabText, { color: "white" }]}>Phòng đã thuê</Text>
-                <Text style={[styles.tabBottomNum,{color:"#E65D4A"}]}>{occupiedCount}</Text>   
+                <Text style={[styles.tabBottomNum,{color:"#E65D4A"}]}>{occupiedCount}</Text>
         </Pressable>
         <Pressable style={[styles.tabButton, {height:135}]} onPress={() => router.push('/electionList')}>
             <View style={{justifyContent: 'center', alignItems: 'center',}}>
@@ -109,12 +104,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   tabButton: {
-    width: '48%',        
+    width: '48%',
     padding: 20,
     height: 80,
     borderRadius: 12,
-    marginBottom: 10,       
-    marginHorizontal: '1%', 
+    marginBottom: 10,
+    marginHorizontal: '1%',
     position: 'relative',
     backgroundColor:"white",
     shadowColor: '#000',
@@ -123,21 +118,21 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  
+
   tabText: {
     color:"white",
     fontWeight:"bold",
     fontSize:15,
   },
   tabBottomNum: {
-    textAlign: 'center',         
-    padding: 0,                   
+    textAlign: 'center',
+    padding: 0,
     width: 20,
     height: 20,
-    borderRadius: 50,            
+    borderRadius: 50,
     backgroundColor: "white",
     right: 10,
     bottom: 10,
-    position:"absolute"   
+    position:"absolute"
   },
 });

@@ -1,6 +1,5 @@
-import { Stack } from "expo-router";
+import { Stack , router} from "expo-router";
 import { useEffect } from "react";
-import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usersService } from "@/api/services/users.service";
 
@@ -16,10 +15,10 @@ export default function AuthLayout() {
         const user: any = await usersService.getMe();
         if (user.statusCode == 401) {
           await AsyncStorage.removeItem("userToken");
-          router.replace("/(admin)/TenantListScreen");
+          router.replace("/(auth)/Login");
           return;
         }
-        router.replace("/(user)/HomeUser");
+        router.replace("/(auth)/Login");
       }
     } catch (error) {
       console.error("Lỗi khi kiểm tra trạng thái đăng nhập:", error);

@@ -8,7 +8,6 @@ import {
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRoomList } from "../../hooks/useRoomList";
-import BottomTabs from "@/components/BottomTabsAdmin";
 import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
 export default function RoomListScreen() {

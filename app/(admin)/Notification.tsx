@@ -9,7 +9,6 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 interface Notification {
   id: number;
@@ -20,7 +19,6 @@ interface Notification {
 }
 
 const NotificationListScreen: React.FC = () => {
-  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentEditId, setCurrentEditId] = useState<number | null>(null);

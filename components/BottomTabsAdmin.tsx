@@ -28,12 +28,12 @@ export default function BottomTabsAdmin() {
     {
       label: "Room List",
       icon: <Ionicons name="bed-outline" size={24} />, // Using bed-outline as a placeholder for "Room List"
-      path: "/RoomList",
+      path: "/(admin)/TenantListScreen",
     },
     {
       label: "Profile",
       icon: <Feather name="user" size={24} />,
-      path: "/profile",
+      path: "/(admin)/PersonalDetail",
     },
   ];
 

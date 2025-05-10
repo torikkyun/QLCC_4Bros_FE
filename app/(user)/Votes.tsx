@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -13,7 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import { electionsService } from "@/api/services/elections.service";
 import { useVotes } from "@/hooks/useVotes";
 
 const { width } = Dimensions.get("window");

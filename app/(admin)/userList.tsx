@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
 import { useUserList } from '../../hooks/userList.hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
 import BottomTabsAdmin from '@/components/BottomTabsAdmin';
 import {Ionicons, Feather  } from '@expo/vector-icons';
 export default function UserList() {
@@ -13,7 +13,7 @@ export default function UserList() {
     const fullName = `${user.firstName} ${user.lastName}`;
     await AsyncStorage.setItem('selectedUserName', fullName);
     await AsyncStorage.setItem('selectedUserEmail', user.email);
-    router.push('./userInfo'); 
+    router.push('./userInfo');
   };
   return (
     <View className="flex-1 bg-white px-4 pt-4">
@@ -73,6 +73,6 @@ export default function UserList() {
         />
         <BottomTabsAdmin/>
     </View>
-    
+
   );
 }

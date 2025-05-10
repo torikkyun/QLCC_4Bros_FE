@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import HomeUser from ".";
 
 export default function AuthLayout() {
   return (

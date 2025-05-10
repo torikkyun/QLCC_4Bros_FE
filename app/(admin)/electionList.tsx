@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet,Modal } from 'reac
 import { useElectionList } from '../../hooks/electionList.hook';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomTabsAdmin from '@/components/BottomTabsAdmin';
+
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'upcoming': return '#15AABF'; // Xanh lam
@@ -28,27 +28,27 @@ const ElectionList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDescription, setSelectedDescription] = useState('');
     const itemsPerPage = 4;
-  
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentElections = Elections.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(Elections.length / itemsPerPage);
-  
+
     const handleNext = () => {
       if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
     };
-  
+
     const handlePrev = () => {
       if (currentPage > 1) setCurrentPage((prev) => prev - 1);
     };
-  
-    const openModal = (description: string) => {
-      setSelectedDescription(description);
-      setModalVisible(true);
-    };
-  
+
+    // const openModal = (description: string) => {
+    //   setSelectedDescription(description);
+    //   setModalVisible(true);
+    // };
+
     if (loading) return <Text style={styles.loading}>Đang tải dữ liệu...</Text>;
     if (error) return <Text style={styles.error}>Lỗi: {error}</Text>;
-  
+
     return (
       <View style={styles.wrapper}>
           <View style={[styles.header,{padding:10}]}>
@@ -58,7 +58,7 @@ const ElectionList = () => {
             </TouchableOpacity>
           </View>
         <ScrollView style={styles.container}>
-  
+
           {currentElections.map((election) => (
             <View
               key={election.id}
@@ -67,11 +67,11 @@ const ElectionList = () => {
               <Text style={styles.label}>Bầu cử quản lý dợt:</Text>
               <Text style={styles.electionId}>{String(election.id).padStart(2, '0')}</Text>
               <Text style={styles.date}>{election.startDate} - {election.endDate}</Text>
-  
+
               <TouchableOpacity onPress={() => saveElectionId(election.id)}>
                 <Text style={styles.moreInfo}>Mô Tả</Text>
               </TouchableOpacity>
-  
+
               <View style={styles.iconRow}>
                 <TouchableOpacity style={styles.iconButton}>
                   <MaterialIcons name="edit" size={22} color="#000" />
@@ -83,7 +83,7 @@ const ElectionList = () => {
             </View>
           ))}
         </ScrollView>
-  
+
         <View style={styles.pagination}>
           <TouchableOpacity onPress={handlePrev} disabled={currentPage === 1} style={styles.pageBtn}>
             <Text style={styles.pageBtnText}>← Trang trước</Text>
@@ -97,7 +97,7 @@ const ElectionList = () => {
             <Text style={styles.pageBtnText}>Trang sau →</Text>
           </TouchableOpacity>
         </View>
-  
+
         <Modal
           transparent
           visible={modalVisible}
@@ -119,7 +119,7 @@ const ElectionList = () => {
       </View>
     );
   };
-  
+
 
 export default ElectionList;
 

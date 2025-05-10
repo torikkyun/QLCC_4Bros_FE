@@ -87,6 +87,8 @@ const TenantListScreen: React.FC = () => {
     "http://103.167.89.178:3000/api/candidate?page=1&limit=10&order=desc";
   const ADD_CANDIDATE_API_URL =
     "http://103.167.89.178:3000/api/election/1/candidate";
+  const DELETE_CANDIDATE_API_URL =
+    "http://103.167.89.178:3000/api/election/1/candidate"; // Endpoint để xóa ứng cử viên
 
   // Hàm lấy token từ AsyncStorage
   const getToken = async (): Promise<string | null> => {
@@ -161,6 +163,11 @@ const TenantListScreen: React.FC = () => {
       }
     }
   };
+
+  // Gọi fetchCandidates ngay khi trang được tải lần đầu
+  useEffect(() => {
+    fetchCandidates();
+  }, []); // Chỉ chạy một lần khi component mount
 
   // Làm mới danh sách ứng cử viên
   const onRefresh = async () => {
@@ -284,8 +291,12 @@ const TenantListScreen: React.FC = () => {
       console.log("Adding candidates to election:", selectedCandidateIds);
       const response = await axios.put<{ success: boolean }>(
         ADD_CANDIDATE_API_URL,
-        { candidateIds: selectedCandidateIds.map((id) => parseInt(id)) },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          candidateIds: selectedCandidateIds.map((id) => parseInt(id)),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       console.log("Add candidate response:", response.data);
@@ -312,6 +323,55 @@ const TenantListScreen: React.FC = () => {
         );
       } else {
         Alert.alert("Error", `Failed to add candidates: ${error.message}`);
+      }
+    }
+  };
+
+  // Xóa ứng cử viên khỏi cuộc bầu cử
+  const deleteCandidate = async (candidateId: string) => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        Alert.alert(
+          "Authentication Required",
+          "No authentication token found. Please log in.",
+          [{ text: "OK", onPress: () => router.push("/Login") }]
+        );
+        return;
+      }
+
+      console.log(`Deleting candidate with ID: ${candidateId}`);
+      const response = await axios.delete<{ success: boolean }>(
+        `${DELETE_CANDIDATE_API_URL}/${candidateId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log("Delete candidate response:", response.data);
+      if (response.data.success) {
+        Alert.alert("Success", "Candidate deleted successfully.");
+        fetchCandidates(); // Làm mới danh sách ứng cử viên
+      } else {
+        Alert.alert("Error", "Failed to delete candidate.");
+      }
+    } catch (error: any) {
+      console.error(
+        "Error deleting candidate:",
+        error.message,
+        error.response?.data,
+        error.response?.status
+      );
+      if (error.response?.status === 401) {
+        Alert.alert(
+          "Unauthorized",
+          "Invalid or expired token. Please log in again.",
+          [{ text: "OK", onPress: () => router.push("/Login") }]
+        );
+      } else if (error.response?.status === 404) {
+        Alert.alert("Error", "Candidate not found.");
+      } else {
+        Alert.alert("Error", `Failed to delete candidate: ${error.message}`);
       }
     }
   };
@@ -352,13 +412,21 @@ const TenantListScreen: React.FC = () => {
           <TouchableOpacity
             onPress={() =>
               Alert.alert(
-                "Not Supported",
-                "Deleting candidates is not supported."
+                "Confirm Delete",
+                `Are you sure you want to delete ${item.name}?`,
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Delete",
+                    onPress: () => deleteCandidate(item.id),
+                    style: "destructive",
+                  },
+                ]
               )
             }
             className="mr-3"
           >
-            <Ionicons name="trash" size={20} color="#888" />
+            <Ionicons name="trash" size={20} color="#ff4444" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
