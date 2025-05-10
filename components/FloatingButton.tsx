@@ -39,7 +39,7 @@ export default function FloatingButton() {
         ]}
       >
         <Pressable
-          onPress={() => router.push("/(user)/Notifications")} // dẫn đến trang khiếu nại
+          onPress={() => router.push("/(user)/Complaint")} // dẫn đến trang khiếu nại
           style={{ width: 60, height: 60 }}
         >
           <Image
