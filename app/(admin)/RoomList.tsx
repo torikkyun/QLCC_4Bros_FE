@@ -8,7 +8,8 @@ import {
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRoomList } from "../../hooks/useRoomList";
-import BottomTabs from "@/components/BottomTabs";
+import BottomTabs from "@/components/BottomTabsAdmin";
+import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
 export default function RoomListScreen() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function RoomListScreen() {
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </Pressable>
-        <Text className="text-lg font-bold">Rentaxo</Text>
+        <Text className="text-lg font-bold">4Bros</Text>
         <Feather name="menu" size={24} color="black" />
       </View>
 
@@ -59,7 +60,7 @@ export default function RoomListScreen() {
       <View className="px-4 mt-2">
         <Text className="text-2xl font-bold text-black">Danh sách phòng</Text>
         <Text className="text-gray-400 mt-1">
-          Just add the property{"\n"}to list on worldwide market!
+          Thêm sửa xóa danh sách phòng!
         </Text>
       </View>
 
@@ -80,7 +81,8 @@ export default function RoomListScreen() {
           rooms.map((room) => (
             <View
               key={room.id}
-              className="bg-white rounded-2xl shadow-md mb-4 p-4"
+              className="rounded-2xl shadow-md mb-4 p-4"
+              style={{ backgroundColor: 'rgba(189, 235, 247, 0.8)' }}
             >
               <RoomCardHeader
                 room={room}
@@ -106,11 +108,7 @@ export default function RoomListScreen() {
           ))
         )}
       </ScrollView>
-
-      {/* Bottom Tab Bar */}
-      <View className="flex-row justify-around items-center h-16 border-t border-gray-200">
-        <BottomTabs />
-      </View>
+        <BottomTabsAdmin />
     </View>
   );
 }
