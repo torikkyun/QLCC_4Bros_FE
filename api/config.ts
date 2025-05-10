@@ -8,6 +8,9 @@ export const API_CONFIG = {
 };
 
 export const ENDPOINTS = {
+  USERS: {
+    ME: "/user/me",
+  },
   ROOMS: {
     LIST: "/room",
     // DETAIL: (id: number) => `/rooms/${id}`,
