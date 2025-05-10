@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,175 +7,372 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ImageBackground,
+  Modal,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSignUp } from "@/hooks/useSignUp";
 import { Eye, EyeOff } from "lucide-react-native";
 
+interface SignUpForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface SignUpErrors {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+interface UseSignUpReturn {
+  form: SignUpForm;
+  errors: SignUpErrors;
+  isLoading: boolean;
+  serverError: string | null;
+  handleChange: (field: keyof SignUpForm, value: string) => void;
+  handleSubmit: () => Promise<void>;
+  isSuccess?: boolean; // Giả định thêm để kiểm tra đăng ký thành công
+}
+
 export default function SignUpScreen() {
-  const { form, errors, isLoading, serverError, handleChange, handleSubmit } =
-    useSignUp();
+  const {
+    form,
+    errors,
+    isLoading,
+    serverError,
+    handleChange,
+    handleSubmit,
+    isSuccess,
+  } = useSignUp() as UseSignUpReturn;
   const router = useRouter();
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
   const toggleShowConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  // Hiển thị pop-up dựa trên trạng thái đăng ký
+  useEffect(() => {
+    if (isSuccess) {
+      setShowSuccessModal(true);
+    }
+    if (serverError) {
+      setShowErrorModal(true);
+    }
+  }, [isSuccess, serverError]);
+
+  // Xử lý đóng pop-up và điều hướng
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    router.replace("./Login"); // Điều hướng về trang đăng nhập sau khi đăng ký thành công
+  };
+
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+  };
+
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-white px-8 pt-40 pb-20"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <ImageBackground
+      source={require("@/assets/images/bgchungcu.jpg")}
+      style={styles.background}
+      resizeMode="cover"
     >
-      {/* Title */}
-      <Text className="text-4xl font-bold text-blue-900 text-center mb-1">
-        Đăng ký
-      </Text>
-      <Text className="text-lg text-gray-500 text-center mb-6">
-        Vui lòng điền thông tin
-      </Text>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        {/* Title */}
+        <Text style={styles.title}>Đăng ký</Text>
+        <Text style={styles.subtitle}>Vui lòng điền thông tin</Text>
 
-      {/* Server Error */}
-      {serverError && (
-        <Text className="text-red-500 text-center mb-4 text-sm">
-          {serverError}
-        </Text>
-      )}
+        {/* Server Error (Optional, since we have modal) */}
+        {serverError && !showErrorModal && (
+          <Text style={styles.errorText}>{serverError}</Text>
+        )}
 
-      {/* Firstname & Lastname */}
-      <View className="flex-row mb-2 justify-between">
-        <View style={{ width: "49%" }}>
+        {/* Firstname & Lastname */}
+        <View style={styles.nameContainer}>
+          <View style={styles.nameInputWrapper}>
+            <TextInput
+              style={[styles.input, errors.firstName ? styles.inputError : {}]}
+              placeholder="Họ"
+              placeholderTextColor="#999"
+              value={form.firstName}
+              onChangeText={(text) => handleChange("firstName", text)}
+            />
+            {errors.firstName && (
+              <Text style={styles.errorText}>{errors.firstName}</Text>
+            )}
+          </View>
+          <View style={styles.nameInputWrapper}>
+            <TextInput
+              style={[styles.input, errors.lastName ? styles.inputError : {}]}
+              placeholder="Tên"
+              placeholderTextColor="#999"
+              value={form.lastName}
+              onChangeText={(text) => handleChange("lastName", text)}
+            />
+            {errors.lastName && (
+              <Text style={styles.errorText}>{errors.lastName}</Text>
+            )}
+          </View>
+        </View>
+
+        {/* Email */}
+        <View style={styles.inputContainer}>
           <TextInput
-            className={`bg-gray-100 px-4 py-3 rounded-md text-base ${
-              errors.firstName ? "border border-red-500" : ""
-            }`}
-            placeholder="Họ"
+            style={[styles.input, errors.email ? styles.inputError : {}]}
+            placeholder="Email"
             placeholderTextColor="#999"
-            value={form.firstName}
-            onChangeText={(text) => handleChange("firstName", text)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={form.email}
+            onChangeText={(text) => handleChange("email", text)}
           />
-          {errors.firstName && (
-            <Text className="text-red-500 text-xs mt-1">
-              {errors.firstName}
-            </Text>
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+        </View>
+
+        {/* Password */}
+        <View style={[styles.inputContainer, styles.passwordContainer]}>
+          <TextInput
+            style={[styles.input, errors.password ? styles.inputError : {}]}
+            placeholder="Nhập mật khẩu"
+            placeholderTextColor="#999"
+            secureTextEntry={!showPassword}
+            value={form.password}
+            onChangeText={(text) => handleChange("password", text)}
+          />
+          <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
+            {showPassword ? (
+              <Eye color="#666" size={20} />
+            ) : (
+              <EyeOff color="#666" size={20} />
+            )}
+          </TouchableOpacity>
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
           )}
         </View>
-        <View style={{ width: "49%" }}>
+
+        {/* Confirm Password */}
+        <View style={[styles.inputContainer, styles.passwordContainer]}>
           <TextInput
-            className={`bg-gray-100 px-4 py-3 rounded-md text-base ${
-              errors.lastName ? "border border-red-500" : ""
-            }`}
-            placeholder="Tên"
+            style={[
+              styles.input,
+              errors.confirmPassword ? styles.inputError : {},
+            ]}
+            placeholder="Nhập lại mật khẩu"
             placeholderTextColor="#999"
-            value={form.lastName}
-            onChangeText={(text) => handleChange("lastName", text)}
+            secureTextEntry={!showConfirmPassword}
+            value={form.confirmPassword}
+            onChangeText={(text) => handleChange("confirmPassword", text)}
           />
-          {errors.lastName && (
-            <Text className="text-red-500 text-xs mt-1">{errors.lastName}</Text>
+          <TouchableOpacity
+            onPress={toggleShowConfirmPassword}
+            style={styles.eyeIcon}
+          >
+            {showConfirmPassword ? (
+              <Eye color="#666" size={20} />
+            ) : (
+              <EyeOff color="#666" size={20} />
+            )}
+          </TouchableOpacity>
+          {errors.confirmPassword && (
+            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
           )}
         </View>
-      </View>
 
-      {/* Email */}
-      <View className="mb-1">
-        <TextInput
-          className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
-            errors.email ? "border border-red-500" : ""
-          }`}
-          placeholder="Email"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
-        />
-        {errors.email && (
-          <Text className="text-red-500 text-xs mt-1">{errors.email}</Text>
-        )}
-      </View>
-
-      {/* Password */}
-      <View className="mb-1 relative">
-        <TextInput
-          className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
-            errors.password ? "border border-red-500" : ""
-          }`}
-          placeholder="••••••••••"
-          placeholderTextColor="#999"
-          secureTextEntry={!showPassword}
-          value={form.password}
-          onChangeText={(text) => handleChange("password", text)}
-        />
+        {/* Submit Button */}
         <TouchableOpacity
-          onPress={toggleShowPassword}
-          className="absolute right-3 top-3"
+          style={styles.submitButton}
+          onPress={handleSubmit}
+          disabled={isLoading}
         >
-          {showPassword ? (
-            <Eye color="#666" size={20} />
+          {isLoading ? (
+            <ActivityIndicator color="white" />
           ) : (
-            <EyeOff color="#666" size={20} />
+            <Text style={styles.submitButtonText}>Đăng ký</Text>
           )}
         </TouchableOpacity>
-        {errors.password && (
-          <Text className="text-red-500 text-xs mt-1">{errors.password}</Text>
-        )}
-      </View>
 
-      {/* Confirm Password */}
-      <View className="mb-4 relative">
-        <TextInput
-          className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
-            errors.confirmPassword ? "border border-red-500" : ""
-          }`}
-          placeholder="Nhập lại mật khẩu"
-          placeholderTextColor="#999"
-          secureTextEntry={!showConfirmPassword} // Sử dụng state riêng cho confirm password
-          value={form.confirmPassword}
-          onChangeText={(text) => handleChange("confirmPassword", text)}
-        />
+        {/* Login Link */}
         <TouchableOpacity
-          onPress={toggleShowConfirmPassword}
-          className="absolute right-3 top-3"
+          style={styles.loginLink}
+          onPress={() => router.replace("./Login")}
         >
-          {showConfirmPassword ? (
-            <Eye color="#666" size={20} />
-          ) : (
-            <EyeOff color="#666" size={20} />
-          )}
+          <Text style={styles.loginLinkText}>Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
-        {errors.confirmPassword && (
-          <Text className="text-red-500 text-xs mt-1">
-            {errors.confirmPassword}
-          </Text>
-        )}
-      </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity
-        className="bg-blue-600 py-4 rounded-md mb-6 flex-row justify-center items-center"
-        onPress={handleSubmit}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-white text-center font-semibold text-base">
-            Đăng ký
-          </Text>
-        )}
-      </TouchableOpacity>
+        {/* Success Modal */}
+        <Modal visible={showSuccessModal} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Đăng ký thành công!</Text>
+              <Text style={styles.modalMessage}>
+                Tài khoản của bạn đã được tạo. Vui lòng đăng nhập để tiếp tục.
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCloseSuccessModal}
+              >
+                <Text style={styles.modalButtonText}>Đi đến đăng nhập</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
-      {/* Login Link */}
-      <TouchableOpacity
-        className="items-center"
-        onPress={() => router.replace("./Login")}
-      >
-        <Text className="text-center text-sm text-gray-600 underline">
-          Đã có tài khoản? Đăng nhập
-        </Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+        {/* Error Modal */}
+        <Modal visible={showErrorModal} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Đăng ký thất bại</Text>
+              <Text style={styles.modalMessage}>{serverError}</Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCloseErrorModal}
+              >
+                <Text style={styles.modalButtonText}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    width: "100%",
+    height: "100%",
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 32,
+    paddingTop: 160,
+    paddingBottom: 80,
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent for readability
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "#1e3a8a",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  errorText: {
+    color: "#ef4444",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  nameInputWrapper: {
+    width: "49%",
+  },
+  inputContainer: {
+    marginBottom: 4,
+  },
+  passwordContainer: {
+    position: "relative",
+  },
+  input: {
+    backgroundColor: "#f3f4f6",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  inputError: {
+    borderWidth: 1,
+    borderColor: "#ef4444",
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 12,
+    top: 12,
+  },
+  submitButton: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 16,
+    borderRadius: 8,
+    marginBottom: 24,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  submitButtonText: {
+    color: "#ffffff",
+    textAlign: "center",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  loginLink: {
+    alignItems: "center",
+  },
+  loginLinkText: {
+    textAlign: "center",
+    fontSize: 14,
+    color: "#4b5563",
+    textDecorationLine: "underline",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 24,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1f2937",
+    marginBottom: 8,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: "#4b5563",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  modalButton: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  modalButtonText: {
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+});

@@ -22,7 +22,7 @@ export default function AuthLayout() {
           router.replace("/(admin)/TenantListScreen");
           return;
         }
-        router.replace("/(admin)/TenantListScreen");
+        router.replace("/(user)/HomeUser");
       }
     } catch (error) {
       console.error("Lỗi khi kiểm tra trạng thái đăng nhập:", error);
