@@ -24,7 +24,6 @@ export async function getOngoingElectionId(): Promise<number | null> {
   const json = await res.json();
   const elections = Array.isArray(json) ? json : json.data;
   const ongoing = elections.find((e: any) => e.status === "ongoing");
-
   return ongoing ? ongoing.id : null;
 }
 

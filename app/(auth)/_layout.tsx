@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { roomService } from "@/api/services/room.service";
+import { usersService } from "@/api/services/users.service";
 
 export default function AuthLayout() {
   useEffect(() => {
@@ -13,11 +13,8 @@ export default function AuthLayout() {
     try {
       const userToken = await AsyncStorage.getItem("userToken");
       if (userToken) {
-        const rooms = await roomService.getRooms({
-          page: 1,
-          limit: 1,
-        });
-        if (!rooms.data) {
+        const user: any = await usersService.getMe();
+        if (user.statusCode == 401) {
           await AsyncStorage.removeItem("userToken");
           router.replace("./Login");
           return;

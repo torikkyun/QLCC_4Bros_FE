@@ -1,3 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
   View,
@@ -13,75 +15,96 @@ const Complaint = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View className="flex-row items-center p-4 border-b border-gray-200">
-        <TouchableOpacity>
-          <Text className="text-2xl">&lt;</Text>
-        </TouchableOpacity>
-        <View className="flex-row items-center ml-4">
-          <Image
-            source={require("@/assets/images/fubuki.jpg")}
-            className="max-w-8 max-h-8 rounded-full"
-          />
-          <Text className="ml-2 text-lg font-semibold">4B Bot</Text>
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+        <View className="flex-row items-center gap-x-3">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-2 rounded-full hover:bg-gray-50"
+          >
+            <Ionicons name="chevron-back" size={24} color="#1a2b47" />
+          </TouchableOpacity>
+          <View className="flex-row items-center">
+            <Image
+              source={require("@/assets/images/fubuki.jpg")}
+              className="w-10 h-10 rounded-full"
+            />
+            <Text className="ml-3 text-lg font-semibold text-[#1a2b47]">
+              4B Bot
+            </Text>
+          </View>
         </View>
-        <TouchableOpacity className="ml-auto">
-          <Text className="text-2xl">≡</Text>
+        <TouchableOpacity className="p-2 rounded-full hover:bg-gray-50">
+          <Ionicons name="ellipsis-horizontal" size={24} color="#1a2b47" />
         </TouchableOpacity>
       </View>
 
       {/* Chat Messages */}
-      <ScrollView className="flex-1 p-4">
+      <ScrollView
+        className="flex-1 px-4 py-6"
+        showsVerticalScrollIndicator={false}
+      >
         {/* User Message */}
         <View className="flex-row justify-end mb-4">
-          <View className="bg-violet-500 rounded-2xl p-3 max-w-[80%]">
-            <Text className="text-white">How is the property condition?</Text>
-            <Text className="text-xs text-gray-200 text-right mt-1">14:22</Text>
+          <View className="bg-violet-600 rounded-2xl rounded-tr-none p-4 max-w-[85%]">
+            <Text className="text-white text-base">
+              How is the property condition?
+            </Text>
+            <Text className="text-xs text-violet-200 text-right mt-1.5">
+              14:22
+            </Text>
           </View>
         </View>
 
         {/* Bot Message */}
         <View className="flex-row mb-4">
-          <View className="bg-gray-100 rounded-2xl p-3 max-w-[80%]">
-            <Text className="text-gray-800">
+          <View className="bg-gray-100 rounded-2xl rounded-tl-none p-4 max-w-[85%]">
+            <Text className="text-gray-800 text-base">
               It's nice myan for sure.{"\n"}You will love it
             </Text>
-            <Text className="text-xs text-gray-500 text-right mt-1">14:24</Text>
+            <Text className="text-xs text-gray-400 text-right mt-1.5">
+              14:24
+            </Text>
           </View>
         </View>
 
         {/* User Message */}
         <View className="flex-row justify-end mb-4">
-          <View className="bg-violet-500 rounded-2xl p-3 max-w-[80%]">
-            <Text className="text-white">I see, thanks for informing!</Text>
-            <Text className="text-xs text-gray-200 text-right mt-1">14:28</Text>
+          <View className="bg-violet-600 rounded-2xl rounded-tr-none p-4 max-w-[85%]">
+            <Text className="text-white text-base">
+              I see, thanks for informing!
+            </Text>
+            <Text className="text-xs text-violet-200 text-right mt-1.5">
+              14:28
+            </Text>
           </View>
         </View>
 
         {/* Bot Message */}
         <View className="flex-row mb-4">
-          <View className="bg-gray-100 rounded-2xl p-3 max-w-[80%]">
-            <Text className="text-gray-800">Thanks for contacting me!</Text>
-            <Text className="text-xs text-gray-500 text-right mt-1">14:30</Text>
+          <View className="bg-gray-100 rounded-2xl rounded-tl-none p-4 max-w-[85%]">
+            <Text className="text-gray-800 text-base">
+              Thanks for contacting me!
+            </Text>
+            <Text className="text-xs text-gray-400 text-right mt-1.5">
+              14:30
+            </Text>
           </View>
         </View>
       </ScrollView>
 
       {/* Input Area */}
-      <View className="p-4 border-t border-gray-200">
-        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2">
-          <TouchableOpacity>
-            <Text className="text-2xl text-gray-400">+</Text>
+      <View className="px-4 py-3 border-t border-gray-100">
+        <View className="flex-row items-center bg-gray-50 rounded-full px-4 py-2.5 gap-x-3">
+          <TouchableOpacity className="p-1.5 rounded-full hover:bg-gray-100">
+            <Ionicons name="add" size={24} color="#6d28d9" />
           </TouchableOpacity>
           <TextInput
-            placeholder="Type something"
-            className="flex-1 ml-2"
-            placeholderTextColor="#9CA3AF"
+            placeholder="Nhập tin nhắn..."
+            className="flex-1 text-base text-gray-700"
+            placeholderTextColor="#9ca3af"
           />
-          <TouchableOpacity>
-            <Image
-              source={require("@/assets/images/fubuki.jpg")}
-              className="max-w-7 max-h-7 rounded-full"
-            />
+          <TouchableOpacity className="p-2 rounded-full bg-violet-600 active:bg-violet-700">
+            <Ionicons name="send" size={20} color="white" />
           </TouchableOpacity>
         </View>
       </View>
