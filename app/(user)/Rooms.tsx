@@ -6,71 +6,30 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
-import { Room } from "@/api/types/rooms.types";
-import { roomsService } from "@/api/services/rooms.service";
 import { router } from "expo-router";
+import { useRooms } from "@/hooks/useRooms";
 
 const RoomScreen = () => {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [buttonColor, setButtonColor] = useState<
-    "vacant" | "occupied" | undefined
-  >(undefined);
-
-  useEffect(() => {
-    fetchRooms(buttonColor);
-  }, [buttonColor]);
-
-  const fetchRooms = async (status?: "vacant" | "occupied" | undefined) => {
-    setLoading(true);
-
-    try {
-      const response = await roomsService.getRooms({
-        page: 1,
-        limit: 10,
-        status: status,
-      });
-      setRooms(response.data);
-      setButtonColor(status);
-      setLoading(false);
-    } catch (err) {
-      console.error("Lỗi khi tải dữ liệu phòng:", err);
-      setLoading(false);
-    }
-  };
-
-  // Lọc phòng theo từ khóa tìm kiếm
-  const filteredRooms = rooms.filter((room) =>
-    room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Hàm xác định trạng thái phòng bằng tiếng Việt
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "vacant":
-        return "Trống";
-      case "occupied":
-        return "Đã thuê";
-      default:
-        return "Không xác định";
-    }
-  };
-
-  const handleStatusFilter = async (
-    status: "vacant" | "occupied" | undefined
-  ) => {
-    try {
-      fetchRooms(status);
-    } catch (err) {
-      console.error("Lỗi khi lọc phòng:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    rooms: filteredRooms,
+    loading,
+    searchQuery,
+    setSearchQuery,
+    buttonColor,
+    handleStatusFilter,
+    getStatusText,
+    selectedBlock,
+    setSelectedBlock,
+    selectedFloor,
+    setSelectedFloor,
+    getAvailableBlocks,
+    getAvailableFloors,
+  } = useRooms();
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -106,14 +65,137 @@ const RoomScreen = () => {
             onChangeText={setSearchQuery}
             placeholderTextColor="#94a3b8"
           />
+          <TouchableOpacity
+            onPress={() => setShowFilterModal(true)}
+            className="p-2"
+          >
+            <Ionicons name="filter" size={20} color="#94a3b8" />
+          </TouchableOpacity>
         </View>
+
+        {/* Modal lọc */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showFilterModal}
+          onRequestClose={() => setShowFilterModal(false)}
+        >
+          <View className="flex-1 bg-black/50 justify-end">
+            <View className="bg-white rounded-t-3xl p-6">
+              <View className="flex-row justify-between items-center mb-6">
+                <Text className="text-xl font-bold text-[#1a2b47]">Bộ lọc</Text>
+                <TouchableOpacity onPress={() => setShowFilterModal(false)}>
+                  <Ionicons name="close" size={24} color="#1a2b47" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Lọc theo dãy */}
+              <Text className="text-gray-700 mb-2 font-medium">Dãy</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="mb-4"
+              >
+                <TouchableOpacity
+                  onPress={() => setSelectedBlock("")}
+                  className={`mr-2 px-4 py-2 rounded-lg ${
+                    selectedBlock === ""
+                      ? "bg-blue-500"
+                      : "bg-white border border-gray-200"
+                  }`}
+                >
+                  <Text
+                    className={
+                      selectedBlock === "" ? "text-white" : "text-gray-700"
+                    }
+                  >
+                    Tất cả
+                  </Text>
+                </TouchableOpacity>
+                {getAvailableBlocks().map((block) => (
+                  <TouchableOpacity
+                    key={block}
+                    onPress={() => setSelectedBlock(block)}
+                    className={`mr-2 px-4 py-2 rounded-lg ${
+                      selectedBlock === block
+                        ? "bg-blue-500"
+                        : "bg-white border border-gray-200"
+                    }`}
+                  >
+                    <Text
+                      className={
+                        selectedBlock === block ? "text-white" : "text-gray-700"
+                      }
+                    >
+                      Dãy {block}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Lọc theo tầng */}
+              <Text className="text-gray-700 mb-2 font-medium">Tầng</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="mb-6"
+              >
+                <TouchableOpacity
+                  onPress={() => setSelectedFloor("")}
+                  className={`mr-2 px-4 py-2 rounded-lg ${
+                    selectedFloor === ""
+                      ? "bg-blue-500"
+                      : "bg-white border border-gray-200"
+                  }`}
+                >
+                  <Text
+                    className={
+                      selectedFloor === "" ? "text-white" : "text-gray-700"
+                    }
+                  >
+                    Tất cả
+                  </Text>
+                </TouchableOpacity>
+                {getAvailableFloors().map((floor) => (
+                  <TouchableOpacity
+                    key={floor}
+                    onPress={() => setSelectedFloor(floor)}
+                    className={`mr-2 px-4 py-2 rounded-lg ${
+                      selectedFloor === floor
+                        ? "bg-blue-500"
+                        : "bg-white border border-gray-200"
+                    }`}
+                  >
+                    <Text
+                      className={
+                        selectedFloor === floor ? "text-white" : "text-gray-700"
+                      }
+                    >
+                      Tầng {floor}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Nút áp dụng */}
+              <TouchableOpacity
+                onPress={() => setShowFilterModal(false)}
+                className="bg-blue-500 py-3 rounded-xl"
+              >
+                <Text className="text-white text-center font-semibold">
+                  Áp dụng
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
 
       {/* Nút lọc theo trạng thái */}
       <View className="flex-row justify-center gap-x-3 mb-6 px-6">
         <TouchableOpacity
           className={`py-2.5 px-6 rounded-xl ${
-            buttonColor == undefined
+            buttonColor === undefined
               ? "bg-blue-500 shadow-lg"
               : "bg-white border border-gray-200"
           }`}
@@ -121,7 +203,7 @@ const RoomScreen = () => {
         >
           <Text
             className={`${
-              buttonColor == undefined ? "text-white" : "text-gray-700"
+              buttonColor === undefined ? "text-white" : "text-gray-700"
             } font-semibold`}
           >
             Tất cả
@@ -129,26 +211,31 @@ const RoomScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter("vacant")}>
           <Text
-            className={`${
-              buttonColor == "vacant" ? "text-white" : "text-gray-700"
-            } font-semibold py-2.5 px-6 rounded-xl ${
-              buttonColor == "vacant"
-                ? "bg-green-500 shadow-lg"
-                : "bg-white border border-gray-200"
-            }`}
+            className="font-semibold py-2.5 px-6 rounded-xl"
+            style={{
+              backgroundColor: buttonColor === "vacant" ? "#22c55e" : "#fff",
+              color: buttonColor === "vacant" ? "#fff" : "#374151",
+              shadowColor: buttonColor === "vacant" ? "#22c55e" : undefined,
+              shadowOpacity: buttonColor === "vacant" ? 0.5 : 0,
+              borderWidth: buttonColor === "vacant" ? 0 : 1,
+              borderColor: buttonColor === "vacant" ? "transparent" : "#e5e7eb",
+            }}
           >
             Phòng trống
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter("occupied")}>
           <Text
-            className={`${
-              buttonColor == "occupied" ? "text-white" : "text-gray-700"
-            } font-semibold py-2.5 px-6 rounded-xl ${
-              buttonColor == "occupied"
-                ? "bg-red-500 shadow-lg shadow-red-500/50"
-                : "bg-white border border-gray-200"
-            }`}
+            className="font-semibold py-2.5 px-6 rounded-xl"
+            style={{
+              backgroundColor: buttonColor === "occupied" ? "#ef4444" : "#fff",
+              color: buttonColor === "occupied" ? "#fff" : "#374151",
+              shadowColor: buttonColor === "occupied" ? "#ef4444" : undefined,
+              shadowOpacity: buttonColor === "occupied" ? 0.5 : 0,
+              borderWidth: buttonColor === "occupied" ? 0 : 1,
+              borderColor:
+                buttonColor === "occupied" ? "transparent" : "#e5e7eb",
+            }}
           >
             Đã thuê
           </Text>

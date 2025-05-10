@@ -1,16 +1,19 @@
-interface VotePayload {
+import { Candidate } from "./candidates.types";
+
+export interface VotePayload {
   electionId: number;
   candidateId: number;
 }
 
-interface VoteResponse {
+export interface VoteResponse {
   voteAt: string;
   userId: number;
   electionId: number;
   candidateId: number;
 }
 
-interface VoteStatus {
+export interface VoteStatus {
   hasVoted: boolean;
   electionStatus: string;
+  candidateId: Candidate | null;
 }

@@ -9,6 +9,7 @@ export const useVotes = (id: string | string[] | undefined) => {
   const [voting, setVoting] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [electionStatus, setElectionStatus] = useState("");
+  const [votedCandidate, setVotedCandidate] = useState<any>(null);
 
   const checkVoteStatus = async () => {
     try {
@@ -16,6 +17,7 @@ export const useVotes = (id: string | string[] | undefined) => {
         const status = await votesService.checkVoteStatus(Number(id));
         setHasVoted(status.hasVoted);
         setElectionStatus(status.electionStatus);
+        setVotedCandidate(status.candidateId);
       }
     } catch (error) {
       console.error("Lỗi khi kiểm tra trạng thái vote:", error);
@@ -80,5 +82,6 @@ export const useVotes = (id: string | string[] | undefined) => {
     handleVote,
     hasVoted,
     electionStatus,
+    votedCandidate,
   };
 };

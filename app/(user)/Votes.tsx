@@ -33,6 +33,7 @@ const VotesScreen = () => {
     handleVote,
     hasVoted,
     electionStatus,
+    votedCandidate,
   } = useVotes(id);
 
   const goToPrevious = () => {
@@ -120,7 +121,12 @@ const VotesScreen = () => {
                 {voting
                   ? "Đang xử lý..."
                   : hasVoted
-                  ? "Đã bình chọn"
+                  ? votedCandidate &&
+                    votedCandidate.user &&
+                    votedCandidate.user.firstName &&
+                    votedCandidate.user.lastName
+                    ? `Đã bình chọn: ${votedCandidate.user.firstName} ${votedCandidate.user.lastName}`
+                    : "Đã bình chọn"
                   : electionStatus === "completed"
                   ? "Đã kết thúc"
                   : "Bình Chọn"}
