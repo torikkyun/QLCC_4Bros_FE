@@ -316,9 +316,7 @@ const RoomScreen = () => {
           )}
         </ScrollView>
       )}
-      <View className="mt-auto">
-        <BottomTabs />
-      </View>
+      <BottomTabs />
     </View>
   );
 };
