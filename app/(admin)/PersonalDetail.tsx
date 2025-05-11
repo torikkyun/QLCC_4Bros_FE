@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 interface User {
   id: number;
@@ -134,13 +135,11 @@ const PersonalDetail: React.FC = () => {
   };
 
   const handleSave = async () => {
-    // Kiểm tra mật khẩu xác nhận
     if (user.password && user.password !== confirmPassword) {
       Alert.alert('Lỗi', 'Mật khẩu không khớp!');
       return;
     }
 
-    // Kiểm tra độ dài mật khẩu (ít nhất 6 ký tự)
     if (user.password && user.password.length < 6) {
       Alert.alert('Lỗi', 'Mật khẩu phải có ít nhất 6 ký tự!');
       return;
@@ -153,9 +152,8 @@ const PersonalDetail: React.FC = () => {
         Alert.alert('Thông báo', 'Vui lòng đăng nhập để tiếp tục.');
         router.replace('/(auth)/Login');
         return;
-    }
+      }
 
-      // Chuẩn bị dữ liệu để gửi lên API (không bao gồm id trong body theo yêu cầu PATCH)
       const updateData = {
         firstName: user.firstName,
         lastName: user.lastName,
@@ -164,7 +162,6 @@ const PersonalDetail: React.FC = () => {
       };
       console.log('Data sent to API:', updateData); // Debug dữ liệu gửi
 
-      // Gọi API với phương thức PATCH để cập nhật thông tin người dùng
       const response = await axios.patch('http://103.167.89.178:3000/api/user', updateData, {
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -172,7 +169,6 @@ const PersonalDetail: React.FC = () => {
       });
       console.log('API /user update response:', response.data); // Debug phản hồi từ API
 
-      // Lưu email vào AsyncStorage và cập nhật emailDisplay
       await AsyncStorage.setItem('email', user.email);
       setEmailDisplay(user.email);
       Alert.alert('Thành công', 'Cập nhật hồ sơ thành công!');
@@ -190,55 +186,71 @@ const PersonalDetail: React.FC = () => {
   };
 
   return (
-    <View className="bg-gray-100 flex-1 items-center justify-center p-4">
-      <View className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <Text className="text-2xl font-bold mb-4 text-center">Thông tin cá nhân</Text>
-        <TouchableOpacity onPress={pickImage}>
+    <View className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100 p-4 justify-center">
+      <View className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto">
+        <Text className="text-3xl font-semibold text-[#1a3c5e] mb-6 text-center">Thông tin cá nhân</Text>
+        <TouchableOpacity
+          onPress={pickImage}
+          activeOpacity={0.7}
+          className="items-center mb-6"
+        >
           <Image
             source={{ uri: avatar || 'https://via.placeholder.com/100' }}
-            className="w-24 h-24 rounded-full border-2 border-gray-300 mx-auto mb-4"
+            className="w-28 h-28 rounded-full border-2 border-gradient-to-r from-violet-500 to-violet-700 shadow-md"
           />
+          <Ionicons name="camera" size={20} color="#6D28D9" className="absolute bottom-2 right-2 bg-white rounded-full p-1" />
         </TouchableOpacity>
-        <Text className="text-gray-600 mb-6 text-center">{emailDisplay}</Text>
+        <Text className="text-sm text-gray-500 mb-6 text-center">{emailDisplay}</Text>
         <TextInput
           value={user.firstName}
           onChangeText={text => handleChange('firstName', text)}
           placeholder="Tên"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+          placeholderTextColor="#9CA3AF"
         />
         <TextInput
           value={user.lastName}
           onChangeText={text => handleChange('lastName', text)}
           placeholder="Họ"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+          placeholderTextColor="#9CA3AF"
         />
         <TextInput
           value={user.email}
           onChangeText={text => handleChange('email', text)}
           placeholder="youremail@shtha.com"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
           keyboardType="email-address"
+          placeholderTextColor="#9CA3AF"
         />
         <TextInput
           value={user.password}
           onChangeText={text => handleChange('password', text)}
           placeholder="Mật khẩu mới"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
           secureTextEntry
+          placeholderTextColor="#9CA3AF"
         />
         <TextInput
           value={confirmPassword}
           onChangeText={handleConfirmPasswordChange}
           placeholder="Xác nhận mật khẩu mới"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
           secureTextEntry
+          placeholderTextColor="#9CA3AF"
         />
-        <Button title="Lưu" onPress={handleSave} color="#3b82f6" />
-        <Text className="mt-4 text-blue-500 text-center">Quay lại đăng nhập</Text>
+          <TouchableOpacity
+            onPress={handleSave}
+            className="w-full bg-violet-500 p-3 rounded-xl shadow-md mt-4"
+          >
+            <Text className="text-white text-center text-lg font-medium">Lưu</Text>
+          </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.replace('/(auth)/Login')}>
+          <Text className="mt-4 text-center text-[#6D28D9] text-sm font-medium underline">Quay lại đăng nhập</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 export default PersonalDetail;
-
