@@ -12,7 +12,7 @@ export default function BottomTabsAdmin() {
     {
       label: "TenantList",
       icon: <Ionicons name="home-outline" size={24} />,
-      path: "/(admin)/TenantListScreen",
+      path: "(admin)/Profile",
     },
     {
       label: "User List",
@@ -33,7 +33,7 @@ export default function BottomTabsAdmin() {
     {
       label: "Profile",
       icon: <Feather name="user" size={24} />,
-      path: "/(admin)/PersonalDetail",
+      path: "/(admin)/electionList",
     },
   ];
 
@@ -47,11 +47,11 @@ export default function BottomTabsAdmin() {
             onPress={() => router.push(path as any)}
             className={clsx(
               "items-center justify-center",
-              isPlusButton && "bg-gray-200 rounded-full w-12 h-12 -mt-6" // Styling for the "+" button
+              isPlusButton && "bg-violet-200 rounded-full w-12 h-12 -mt-6" // Styling for the "+" button
             )}
           >
             {React.cloneElement(icon, {
-              color: isPlusButton ? "#fff" : isActive ? "#6D28D9" : "#9CA3AF", // White for the "+" button
+              color: isPlusButton ? "#6246EA" : isActive ? "#6D28D9" : "#6246EA", // White for the "+" button
             })}
             {!isPlusButton && ( // Hide label for the "+" button
               <Text

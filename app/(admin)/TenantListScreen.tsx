@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -76,19 +77,26 @@ const TenantListScreen: React.FC = () => {
   const [availableCandidates, setAvailableCandidates] = useState<
     AvailableCandidate[]
   >([]);
-  const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>(
-    []
-  );
+  const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
+  const [electionId, setElectionId] = useState<string | null>(null);
   const router = useRouter();
 
   // API endpoints
-  const RESULTS_API_URL = "http://103.167.89.178:3000/api/election/1/results";
-  const CANDIDATE_API_URL =
-    "http://103.167.89.178:3000/api/candidate?page=1&limit=10&order=desc";
-  const ADD_CANDIDATE_API_URL =
-    "http://103.167.89.178:3000/api/election/1/candidate";
-  const DELETE_CANDIDATE_API_URL =
-    "http://103.167.89.178:3000/api/election/1/candidate"; // Endpoint để xóa ứng cử viên
+  const BASE_API_URL = "http://103.167.89.178:3000/api";
+  const CANDIDATE_API_URL = `${BASE_API_URL}/candidate?page=1&limit=10&order=desc`;
+  const DELETE_CANDIDATE_API_URL = `${BASE_API_URL}/candidate`;
+
+  // Hàm lấy electionId từ AsyncStorage
+  const getElectionId = async (): Promise<string | null> => {
+    try {
+      const id = await AsyncStorage.getItem("selectedElectionId");
+      console.log("Retrieved election ID:", id ? id : "No election ID found");
+      return id;
+    } catch (error) {
+      console.error("Error retrieving election ID:", error);
+      return null;
+    }
+  };
 
   // Hàm lấy token từ AsyncStorage
   const getToken = async (): Promise<string | null> => {
@@ -101,6 +109,31 @@ const TenantListScreen: React.FC = () => {
       return null;
     }
   };
+
+  // Lấy electionId khi component được gắn kết
+  useEffect(() => {
+    const initializeElectionId = async () => {
+      const id = await getElectionId();
+      if (id) {
+        setElectionId(id);
+      } else {
+        Alert.alert(
+          "Lỗi",
+          "Không tìm thấy ID cuộc bầu cử. Vui lòng chọn lại.",
+          [{ text: "OK", onPress: () => router.push("/(admin)/electionList") }]
+        );
+      }
+    };
+    initializeElectionId();
+  }, []);
+
+  // Định nghĩa URL dựa trên electionId
+  const RESULTS_API_URL = electionId
+    ? `${BASE_API_URL}/election/${electionId}/results`
+    : null;
+  const ADD_CANDIDATE_API_URL = electionId
+    ? `${BASE_API_URL}/election/${electionId}/candidate`
+    : null;
 
   // Ánh xạ dữ liệu từ API election results thành Candidate
   const mapApiCandidateToCandidate = (
@@ -125,19 +158,24 @@ const TenantListScreen: React.FC = () => {
 
   // Lấy danh sách ứng cử viên từ API election results
   const fetchCandidates = async () => {
+    if (!RESULTS_API_URL) {
+      console.error("RESULTS_API_URL is not defined");
+      return;
+    }
+
     try {
       const token = await getToken();
       if (!token) {
         Alert.alert(
-          "Authentication Required",
-          "No authentication token found. Please log in.",
+          "Yêu cầu xác thực",
+          "Không tìm thấy token xác thực. Vui lòng đăng nhập.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
         return;
       }
 
-      console.log("Fetching candidates from:", RESULTS_API_URL);
-      console.log("Using token:", token);
+      console.log("Đang lấy danh sách ứng cử viên từ:", RESULTS_API_URL);
+      console.log("Sử dụng token:", token);
       const response = await axios.get<ApiCandidate[]>(RESULTS_API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -146,67 +184,90 @@ const TenantListScreen: React.FC = () => {
       const mappedCandidates = response.data.map(mapApiCandidateToCandidate);
       setCandidates(mappedCandidates);
     } catch (error: any) {
-      console.error(
-        "Error fetching candidates:",
-        error.message,
-        error.response?.data,
-        error.response?.status
-      );
-      if (error.response?.status === 401) {
-        Alert.alert(
-          "Unauthorized",
-          "Invalid or expired token. Please log in again.",
-          [{ text: "OK", onPress: () => router.push("/Login") }]
-        );
+      if (error.response?.status === 404) {
+        // Không có ứng cử viên, đặt danh sách rỗng, không ghi log lỗi
+        setCandidates([]);
       } else {
-        Alert.alert("Error", `Failed to load candidates: ${error.message}`);
+        console.error(
+          "Lỗi khi lấy danh sách ứng cử viên:",
+          error.message,
+          error.response?.data,
+          error.response?.status
+        );
+        if (error.response?.status === 401) {
+          Alert.alert(
+            "Không được phép",
+            "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
+            [{ text: "OK", onPress: () => router.push("/Login") }]
+          );
+        } else {
+          Alert.alert(
+            "Lỗi",
+            `Không thể tải danh sách ứng cử viên: ${error.message}`
+          );
+        }
       }
     }
   };
 
-  // Gọi fetchCandidates ngay khi trang được tải lần đầu
+  // Gọi fetchCandidates khi electionId thay đổi
   useEffect(() => {
-    fetchCandidates();
-  }, []); // Chỉ chạy một lần khi component mount
+    if (electionId) {
+      fetchCandidates();
+    }
+  }, [electionId]);
 
   // Làm mới danh sách ứng cử viên
   const onRefresh = async () => {
+    if (!RESULTS_API_URL) {
+      console.error("RESULTS_API_URL is not defined");
+      return;
+    }
+
     setRefreshing(true);
     try {
       const token = await getToken();
       if (!token) {
         Alert.alert(
-          "Authentication Required",
-          "No authentication token found. Please log in.",
+          "Yêu cầu xác thực",
+          "Không tìm thấy token xác thực. Vui lòng đăng nhập.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
         setRefreshing(false);
         return;
       }
 
-      console.log("Refreshing candidates from:", RESULTS_API_URL);
+      console.log("Đang làm mới danh sách ứng cử viên từ:", RESULTS_API_URL);
       const response = await axios.get<ApiCandidate[]>(RESULTS_API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Refresh API response:", response.data);
+      console.log("API response (làm mới):", response.data);
       const mappedCandidates = response.data.map(mapApiCandidateToCandidate);
       setCandidates(mappedCandidates);
     } catch (error: any) {
-      console.error(
-        "Error refreshing candidates:",
-        error.message,
-        error.response?.data,
-        error.response?.status
-      );
-      if (error.response?.status === 401) {
-        Alert.alert(
-          "Unauthorized",
-          "Invalid or expired token. Please log in again.",
-          [{ text: "OK", onPress: () => router.push("/Login") }]
-        );
+      if (error.response?.status === 404) {
+        // Không có ứng cử viên, đặt danh sách rỗng, không ghi log lỗi
+        setCandidates([]);
       } else {
-        Alert.alert("Error", `Failed to refresh candidates: ${error.message}`);
+        console.error(
+          "Lỗi khi làm mới danh sách ứng cử viên:",
+          error.message,
+          error.response?.data,
+          error.response?.status
+        );
+        if (error.response?.status === 401) {
+          Alert.alert(
+            "Không được phép",
+            "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
+            [{ text: "OK", onPress: () => router.push("/Login") }]
+          );
+        } else {
+          Alert.alert(
+            "Lỗi",
+            `Không thể làm mới danh sách ứng cử viên: ${error.message}`
+          );
+        }
       }
     } finally {
       setRefreshing(false);
@@ -219,27 +280,23 @@ const TenantListScreen: React.FC = () => {
       const token = await getToken();
       if (!token) {
         Alert.alert(
-          "Authentication Required",
-          "No authentication token found. Please log in.",
+          "Yêu cầu xác thực",
+          "Không tìm thấy token xác thực. Vui lòng đăng nhập.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
         return;
       }
 
-      console.log("Fetching available candidates from:", CANDIDATE_API_URL);
-      const response = await axios.get<ApiCandidateResponse>(
-        CANDIDATE_API_URL,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      console.log("Đang lấy danh sách ứng cử viên có sẵn từ:", CANDIDATE_API_URL);
+      const response = await axios.get<ApiCandidateResponse>(CANDIDATE_API_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       console.log("API response (candidates):", response.data);
       const mappedCandidates = response.data.data.map(
         mapApiAvailableCandidateToAvailableCandidate
       );
 
-      // Pre-check candidates that are already in the election
       const existingCandidateIds = candidates.map((c) => c.id);
       const preSelectedIds = mappedCandidates
         .filter((c) => existingCandidateIds.includes(c.id))
@@ -250,21 +307,21 @@ const TenantListScreen: React.FC = () => {
       setModalVisible(true);
     } catch (error: any) {
       console.error(
-        "Error fetching available candidates:",
+        "Lỗi khi lấy danh sách ứng cử viên có sẵn:",
         error.message,
         error.response?.data,
         error.response?.status
       );
       if (error.response?.status === 401) {
         Alert.alert(
-          "Unauthorized",
-          "Invalid or expired token. Please log in again.",
+          "Không được phép",
+          "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
       } else {
         Alert.alert(
-          "Error",
-          `Failed to load available candidates: ${error.message}`
+          "Lỗi",
+          `Không thể tải danh sách ứng cử viên có sẵn: ${error.message}`
         );
       }
     }
@@ -272,8 +329,13 @@ const TenantListScreen: React.FC = () => {
 
   // Thêm ứng cử viên vào cuộc bầu cử
   const addCandidatesToElection = async () => {
+    if (!ADD_CANDIDATE_API_URL) {
+      console.error("ADD_CANDIDATE_API_URL is not defined");
+      return;
+    }
+
     if (selectedCandidateIds.length === 0) {
-      Alert.alert("Error", "Please select at least one candidate.");
+      Alert.alert("Lỗi", "Vui lòng chọn ít nhất một ứng cử viên.");
       return;
     }
 
@@ -281,14 +343,14 @@ const TenantListScreen: React.FC = () => {
       const token = await getToken();
       if (!token) {
         Alert.alert(
-          "Authentication Required",
-          "No authentication token found. Please log in.",
+          "Yêu cầu xác thực",
+          "Không tìm thấy token xác thực. Vui lòng đăng nhập.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
         return;
       }
 
-      console.log("Adding candidates to election:", selectedCandidateIds);
+      console.log("Đang thêm ứng cử viên vào cuộc bầu cử:", selectedCandidateIds);
       const response = await axios.put<{ success: boolean }>(
         ADD_CANDIDATE_API_URL,
         {
@@ -299,79 +361,87 @@ const TenantListScreen: React.FC = () => {
         }
       );
 
-      console.log("Add candidate response:", response.data);
+      console.log("Phản hồi thêm ứng cử viên:", response.data);
       if (response.data.success) {
-        Alert.alert("Success", "Candidates added successfully.");
+        Alert.alert("Thành công", "Đã thêm ứng cử viên thành công.");
         setModalVisible(false);
         setSelectedCandidateIds([]);
-        fetchCandidates(); // Làm mới danh sách ứng cử viên
+        fetchCandidates();
       } else {
-        Alert.alert("Error", "Failed to add candidates.");
+        Alert.alert("Lỗi", "Không thể thêm ứng cử viên.");
       }
     } catch (error: any) {
       console.error(
-        "Error adding candidates:",
+        "Lỗi khi thêm ứng cử viên:",
         error.message,
         error.response?.data,
         error.response?.status
       );
       if (error.response?.status === 401) {
         Alert.alert(
-          "Unauthorized",
-          "Invalid or expired token. Please log in again.",
+          "Không được phép",
+          "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
       } else {
-        Alert.alert("Error", `Failed to add candidates: ${error.message}`);
+        Alert.alert("Lỗi", `Không thể thêm ứng cử viên: ${error.message}`);
       }
     }
   };
 
-  // Xóa ứng cử viên khỏi cuộc bầu cử
+  // Xóa ứng cử viên
   const deleteCandidate = async (candidateId: string) => {
     try {
       const token = await getToken();
       if (!token) {
         Alert.alert(
-          "Authentication Required",
-          "No authentication token found. Please log in.",
+          "Yêu cầu xác thực",
+          "Không tìm thấy token xác thực. Vui lòng đăng nhập.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
         return;
       }
 
-      console.log(`Deleting candidate with ID: ${candidateId}`);
-      const response = await axios.delete<{ success: boolean }>(
+      if (!candidateId || isNaN(parseInt(candidateId))) {
+        Alert.alert("Lỗi", "ID ứng cử viên không hợp lệ.");
+        return;
+      }
+
+      console.log(`Đang xóa ứng cử viên với ID: ${candidateId}`);
+      const response = await axios.delete(
         `${DELETE_CANDIDATE_API_URL}/${candidateId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      console.log("Delete candidate response:", response.data);
-      if (response.data.success) {
-        Alert.alert("Success", "Candidate deleted successfully.");
-        fetchCandidates(); // Làm mới danh sách ứng cử viên
+      console.log("Phản hồi xóa ứng cử viên:", response.data);
+      if (response.data.rowCount === 1) {
+        Alert.alert("Thành công", "Đã xóa ứng cử viên thành công.");
+        fetchCandidates();
       } else {
-        Alert.alert("Error", "Failed to delete candidate.");
+        Alert.alert(
+          "Lỗi",
+          "Không thể xóa ứng cử viên: Không có bản ghi nào được xóa."
+        );
       }
     } catch (error: any) {
       console.error(
-        "Error deleting candidate:",
+        "Lỗi khi xóa ứng cử viên:",
         error.message,
         error.response?.data,
         error.response?.status
       );
       if (error.response?.status === 401) {
         Alert.alert(
-          "Unauthorized",
-          "Invalid or expired token. Please log in again.",
+          "Không được phép",
+          "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
           [{ text: "OK", onPress: () => router.push("/Login") }]
         );
       } else if (error.response?.status === 404) {
-        Alert.alert("Error", "Candidate not found.");
+        Alert.alert("Lỗi", "Không tìm thấy ứng cử viên.");
       } else {
-        Alert.alert("Error", `Failed to delete candidate: ${error.message}`);
+        Alert.alert("Lỗi", `Không thể xóa ứng cử viên: ${error.message}`);
       }
     }
   };
@@ -390,56 +460,42 @@ const TenantListScreen: React.FC = () => {
 
   // Render item cho danh sách ứng cử viên trong election
   const renderItem = ({ item }: { item: Candidate }) => (
-    <View className="flex-row items-center bg-[#e6f0fa] p-3 rounded-xl mb-2">
+    <View className="flex-row items-center bg-white p-4 rounded-xl mb-3 shadow-md border border-gray-100">
       <Image
         source={{ uri: "https://via.placeholder.com/40" }}
-        className="w-10 h-10 rounded-full mr-3"
+        className="w-12 h-12 rounded-full mr-4"
       />
       <View className="flex-1">
-        <Text className="text-base font-medium">{item.name}</Text>
-        <Text className="text-sm text-gray-600">
-          Email: <Text className="font-bold">{item.email}</Text>
+        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Email: <Text className="font-medium">{item.email}</Text>
         </Text>
-        <Text className="text-sm text-gray-600">
-          Description: <Text className="font-bold">{item.description}</Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Mô tả: <Text className="font-medium">{item.description}</Text>
         </Text>
-        <Text className="text-sm text-gray-600">
-          Vote Count: <Text className="font-bold">{item.voteCount}</Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Số phiếu: <Text className="font-medium">{item.voteCount}</Text>
         </Text>
       </View>
-      <View className="items-end">
-        <View className="flex-row">
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                "Confirm Delete",
-                `Are you sure you want to delete ${item.name}?`,
-                [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Delete",
-                    onPress: () => deleteCandidate(item.id),
-                    style: "destructive",
-                  },
-                ]
-              )
-            }
-            className="mr-3"
-          >
-            <Ionicons name="trash" size={20} color="#ff4444" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                "Not Supported",
-                "Editing candidates is not supported."
-              )
-            }
-          >
-            <Ionicons name="pencil" size={20} color="#888" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert(
+            "Xác nhận xóa",
+            `Bạn có chắc muốn xóa ${item.name}?`,
+            [
+              { text: "Hủy", style: "cancel" },
+              {
+                text: "Xóa",
+                onPress: () => deleteCandidate(item.id),
+                style: "destructive",
+              },
+            ]
+          )
+        }
+        className="p-2"
+      >
+        <Ionicons name="trash" size={24} color="#ff4444" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -451,11 +507,13 @@ const TenantListScreen: React.FC = () => {
   }) => (
     <TouchableOpacity
       onPress={() => toggleCandidateSelection(item.id)}
-      className="flex-row items-center p-3 bg-[#e6f0fa] rounded-xl mb-2"
+      className="flex-row items-center bg-white p-4 rounded-xl mb-3 shadow-md border border-gray-100"
     >
       <View
-        className={`w-6 h-6 mr-3 border-2 rounded ${
-          selectedCandidateIds.includes(item.id) ? "bg-violet-700" : "bg-white"
+        className={`w-6 h-6 mr-4 border-2 rounded ${
+          selectedCandidateIds.includes(item.id)
+            ? "bg-violet-700 border-violet-700"
+            : "bg-white border-gray-300"
         }`}
       >
         {selectedCandidateIds.includes(item.id) && (
@@ -463,50 +521,59 @@ const TenantListScreen: React.FC = () => {
         )}
       </View>
       <View className="flex-1">
-        <Text className="text-base font-medium">{item.name}</Text>
-        <Text className="text-sm text-gray-600">
-          Email: <Text className="font-bold">{item.email}</Text>
+        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Email: <Text className="font-medium">{item.email}</Text>
         </Text>
-        <Text className="text-sm text-gray-600">
-          Description: <Text className="font-bold">{item.description}</Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Mô tả: <Text className="font-medium">{item.description}</Text>
         </Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className="flex-1 bg-gray-50 p-5">
       {/* Header */}
-      <View className="flex-row justify-between items-center mb-4">
+      <View className="flex-row justify-between items-center mb-6">
         <View className="flex-row items-center">
-          <Ionicons name="arrow-back" size={24} color="#1a3c5e" />
-          <Text className="text-2xl font-bold text-[#1a3c5e] ml-2">
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color="#1a3c5e" />
+          </TouchableOpacity>
+          <Text className="text-3xl font-bold text-[#1a3c5e] ml-3">
             Rentaxo
           </Text>
         </View>
-        <Ionicons name="menu" size={24} color="#1a3c5e" />
-      </View>
-      {/* Title và nút thêm ứng cử viên */}
-      <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-xl font-semibold">Candidate List</Text>
-        <TouchableOpacity
-          onPress={fetchAvailableCandidates}
-          className="bg-violet-700 px-3 py-2 rounded-lg"
-        >
-          <Text className="text-white font-medium">Add Candidate</Text>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={28} color="#1a3c5e" />
         </TouchableOpacity>
       </View>
+
+      {/* Title và nút thêm ứng cử viên */}
+      <View className="flex-row justify-between items-center mb-6">
+        <Text className="text-2xl font-semibold text-gray-800">
+          Danh sách ứng cử viên
+        </Text>
+        <TouchableOpacity
+          onPress={fetchAvailableCandidates}
+          className="bg-violet-700 p-3 rounded-full shadow-md"
+        >
+          <Ionicons name="add-circle" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
       {/* Search Bar */}
-      <View className="flex-row items-center bg-[#e6f0fa] p-3 rounded-2xl mb-4">
-        <Ionicons name="search" size={20} color="#888" />
+      <View className="flex-row items-center bg-white p-4 rounded-xl mb-6 shadow-md border border-gray-100">
+        <Ionicons name="search" size={22} color="#888" />
         <TextInput
-          className="flex-1 mx-2 text-base"
-          placeholder="Search name"
+          className="flex-1 mx-3 text-base text-gray-800"
+          placeholder="Tìm kiếm tên"
           value={searchText}
           onChangeText={setSearchText}
         />
-        <Ionicons name="options" size={20} color="#888" />
+        <Ionicons name="options" size={22} color="#888" />
       </View>
+
       {/* Candidate List */}
       <FlatList
         data={filteredCandidates}
@@ -516,9 +583,15 @@ const TenantListScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListEmptyComponent={
-          <Text className="text-center text-gray-500">No candidates found</Text>
+          <View className="text-center mt-4">
+            <Text className="text-center text-gray-500 text-base mb-4">
+              Chưa có ứng cử viên nào
+            </Text>
+          </View>
         }
+        showsVerticalScrollIndicator={false}
       />
+
       {/* Modal chọn ứng cử viên */}
       <Modal
         animationType="slide"
@@ -526,40 +599,44 @@ const TenantListScreen: React.FC = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 bg-black/50 justify-center p-4">
-          <View className="bg-white rounded-xl p-4 max-h-[80%]">
-            <Text className="text-xl font-semibold mb-4">
-              Select Candidates
+        <View className="flex-1 bg-black/50 justify-center p-5">
+          <View className="bg-white rounded-2xl p-5 max-h-[80%] shadow-lg">
+            <Text className="text-2xl font-semibold text-gray-800 mb-5">
+              Chọn ứng cử viên
             </Text>
             <FlatList
               data={availableCandidates}
               keyExtractor={(item) => item.id}
               renderItem={renderAvailableCandidateItem}
               ListEmptyComponent={
-                <Text className="text-center text-gray-500">
-                  No candidates available
+                <Text className="text-center text-gray-500 text-base mt-4">
+                  Không có ứng cử viên nào
                 </Text>
               }
+              showsVerticalScrollIndicator={false}
             />
-            <View className="flex-row justify-end mt-4">
+            <View className="flex-row justify-end mt-5">
               <Pressable
                 onPress={() => setModalVisible(false)}
-                className="px-4 py-2 mr-2"
+                className="px-5 py-3 mr-3"
               >
-                <Text className="text-gray-600">Cancel</Text>
+                <Text className="text-gray-600 text-base font-medium">Hủy</Text>
               </Pressable>
               <Pressable
                 onPress={addCandidatesToElection}
-                className="bg-violet-700 px-4 py-2 rounded-lg"
+                className="bg-violet-700 px-5 py-3 rounded-lg"
               >
-                <Text className="text-white">Add Selected</Text>
+                <Text className="text-white text-base font-medium">
+                  Thêm đã chọn
+                </Text>
               </Pressable>
             </View>
           </View>
         </View>
       </Modal>
+
       {/* Bottom Navigation */}
-      <View>
+      <View className="mt-4">
         <BottomTabsAdmin />
       </View>
     </View>
@@ -567,3 +644,4 @@ const TenantListScreen: React.FC = () => {
 };
 
 export default TenantListScreen;
+

@@ -50,7 +50,7 @@ const PersonalDetail: React.FC = () => {
         console.log('userToken:', userToken); // Debug token
         if (!userToken) {
           Alert.alert('Thông báo', 'Vui lòng đăng nhập để tiếp tục.');
-          router.replace('/(auth)/login');
+          router.replace('/(auth)/Login');
           return;
         }
 
@@ -90,7 +90,7 @@ const PersonalDetail: React.FC = () => {
         if (axiosError.response?.status === 401) {
           Alert.alert('Lỗi', 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
           await AsyncStorage.removeItem('userToken');
-          router.replace('/(auth)/login');
+          router.replace('/(auth)/Login');
         } else {
           Alert.alert('Lỗi', 'Không thể lấy thông tin người dùng.');
         }
@@ -151,7 +151,7 @@ const PersonalDetail: React.FC = () => {
       console.log('userToken for update:', userToken); // Debug token
       if (!userToken) {
         Alert.alert('Thông báo', 'Vui lòng đăng nhập để tiếp tục.');
-        router.replace('/(auth)/login');
+        router.replace('/(auth)/Login');
         return;
     }
 
@@ -182,7 +182,7 @@ const PersonalDetail: React.FC = () => {
       if (axiosError.response?.status === 401) {
         Alert.alert('Lỗi', 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
         await AsyncStorage.removeItem('userToken');
-        router.replace('/(auth)/login');
+        router.replace('/(auth)/Login');
       } else {
         Alert.alert('Lỗi', 'Không thể cập nhật hồ sơ!');
       }
