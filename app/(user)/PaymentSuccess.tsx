@@ -13,7 +13,7 @@ export default function PaymentSuccess() {
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeftIcon size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-black">Payment</Text>
+        <Text className="text-lg font-semibold text-black">Thanh Toán</Text>
         <TouchableOpacity>
           <Bars3Icon size={24} color="black" />
         </TouchableOpacity>
@@ -28,14 +28,16 @@ export default function PaymentSuccess() {
           </View>
 
           {/* Texts */}
-          <Text className="text-xl font-bold text-gray-700 mb-2">Success</Text>
+          <Text className="text-xl font-bold text-gray-700 mb-2">
+            Thành Công
+          </Text>
           <Text className="text-gray-400 mb-6 text-center">
-            You have completed your payment
+            Bạn đã thanh toán thành công
           </Text>
 
           {/* Button */}
           <TouchableOpacity
-            onPress={() => router.replace("./admin/screens/notification")}
+            onPress={() => router.push("../HomeUser")}
             className="bg-emerald-400 w-full py-3 rounded-xl"
           >
             <Text className="text-white font-semibold text-center">

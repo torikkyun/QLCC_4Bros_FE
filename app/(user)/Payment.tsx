@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import BottomTabs from "@/components/BottomTabs";
 
 export default function PaymentScreen() {
+  const router = useRouter();
   return (
     <View className="flex-1 bg-white">
       {/* Nội dung chính */}
@@ -12,8 +14,10 @@ export default function PaymentScreen() {
         <View>
           {/* Header */}
           <View className="flex-row items-center mb-10">
-            <Ionicons name="chevron-back" size={24} />
-            <Text className="text-lg font-bold ml-2">Advance Payment</Text>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} />
+            </TouchableOpacity>
+            <Text className="text-lg font-bold ml-2">Thanh Toán Nâng Cao</Text>
           </View>
 
           {/* Nội dung */}
@@ -41,12 +45,14 @@ export default function PaymentScreen() {
                   Chi Phí Tháng Này:
                 </Text>
                 <Text className="text-base text-gray-600 border-b border-gray-300 py-1">
-                  Điện:....
+                  Điện: 1000kw
                 </Text>
                 <Text className="text-base text-gray-600 border-b border-gray-300 py-1">
-                  Nước:....
+                  Nước: 500m3
                 </Text>
-                <Text className="text-base text-gray-600 py-1">Khác:....</Text>
+                <Text className="text-base text-gray-600 py-1">
+                  Khác: 500.000 đồng
+                </Text>
               </View>
             </View>
 
@@ -57,17 +63,19 @@ export default function PaymentScreen() {
             >
               <View className="flex-row justify-between mb-3">
                 <Text className="font-semibold text-gray-900 text-base">
-                  Price details
+                  Chi Tiết Giá
                 </Text>
                 <TouchableOpacity>
                   <Text className="text-purple-500 text-sm font-semibold">
-                    More info
+                    Thông tin thêm
                   </Text>
                 </TouchableOpacity>
               </View>
               <View className="flex-row justify-between items-center">
-                <Text className="text-gray-600 text-base">Total price</Text>
-                <Text className="text-purple-600 font-bold text-lg">$500</Text>
+                <Text className="text-gray-600 text-base">Tổng Thanh Toán</Text>
+                <Text className="text-purple-600 font-bold text-lg">
+                  1.500.000 đồng
+                </Text>
               </View>
             </View>
 
@@ -77,7 +85,7 @@ export default function PaymentScreen() {
               style={{ minHeight: 220 }}
             >
               <Text className="font-semibold text-gray-900 text-base mb-5">
-                Pay with
+                Thanh Toán Với
               </Text>
 
               {[
@@ -111,7 +119,10 @@ export default function PaymentScreen() {
         </View>
 
         {/* Nút Thanh Toán */}
-        <TouchableOpacity className="bg-purple-600 py-4 rounded-full mt-2">
+        <TouchableOpacity
+          className="bg-purple-600 py-4 rounded-full mt-2"
+          onPress={() => router.push("../PaymentSuccess")}
+        >
           <Text className="text-white text-center font-semibold text-base">
             Thanh Toán
           </Text>
