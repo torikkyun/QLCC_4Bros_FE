@@ -66,7 +66,7 @@ export default function HomeScreen() {
                 <Text style={[styles.tabText, { color: "black", marginTop: 8 }]}>Danh sách thông báo</Text>
             </View>
         </Pressable>
-        <Pressable style={[styles.tabButton, { height: "60%", width: "100%" }]}>
+        <Pressable style={[styles.tabButton, { height: "60%", width: "100%" }]} >
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <FontAwesome5 name="frown" size={164} color="red" />
                 <View style={{ position: 'absolute', top: 0, left: 0 }}>

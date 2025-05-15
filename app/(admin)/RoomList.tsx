@@ -33,7 +33,7 @@ export default function RoomListScreen() {
         <Pressable
           onPress={() =>
             router.push({
-              pathname: "./admin/RoomEdit", // todo
+              pathname: "./roomDetail", // todo
               params: { roomData: JSON.stringify(room) },
             })
           }
@@ -91,12 +91,12 @@ export default function RoomListScreen() {
                 <Pressable
                   onPress={() =>
                     router.push({
-                      pathname: "./admin/RoomEdit", // todo
+                      pathname: "./roomDetail", // todo
                       params: { roomData: JSON.stringify(room) },
                     })
                   }
                 >
-                  <Text className="text-gray-400">View More Info</Text>
+                  <Text className="text-gray-400">Xem thêm</Text>
                 </Pressable>
                 <View className="items-end">
                   <Text className="text-gray-400 text-sm">Chi phí tháng</Text>

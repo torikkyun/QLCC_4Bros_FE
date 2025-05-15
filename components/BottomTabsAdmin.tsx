@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-import clsx from "clsx";
 
 export default function BottomTabsAdmin() {
   const router = useRouter();
@@ -10,55 +9,59 @@ export default function BottomTabsAdmin() {
 
   const tabs = [
     {
-      label: "TenantList",
+      label: "Home",
       icon: <Ionicons name="home-outline" size={24} />,
-      path: "(admin)/Profile",
+      path: "/(admin)/home-admin",
     },
     {
-      label: "User List",
+      label: "Người dùng",
       icon: <Feather name="users" size={24} />,
       path: "/userList",
     },
     {
-      label: "", // No label for the "+" button
-      icon: <MaterialIcons name="add" size={30} />, // Using MaterialIcons for the "+"
-      path: "/add", // Adjust the path as needed
-      isPlusButton: true, // Custom property to identify the "+" button
+      label: "",
+      icon: <MaterialIcons name="add" size={30} />,
+      path: "/CreateNotificationScreen",
+      isPlusButton: true,
     },
     {
-      label: "Room List",
-      icon: <Ionicons name="bed-outline" size={24} />, // Using bed-outline as a placeholder for "Room List"
-      path: "/(admin)/TenantListScreen",
+      label: "Phòng",
+      icon: <Ionicons name="bed-outline" size={24} />,
+      path: "/RoomList",
     },
     {
-      label: "Profile",
+      label: "Hồ Sơ",
       icon: <Feather name="user" size={24} />,
-      path: "/(admin)/electionList",
+      path: "/profile",
     },
   ];
 
   return (
-    <View className="flex-row justify-around bg-white py-3 border-t border-gray-200">
+    <View style={styles.container}>
       {tabs.map(({ label, icon, path, isPlusButton }) => {
         const isActive = pathname === path;
         return (
           <TouchableOpacity
-            key={label || "plus-button"} // Use a unique key for the "+" button
+            key={label || "plus-button"}
             onPress={() => router.push(path as any)}
-            className={clsx(
-              "items-center justify-center",
-              isPlusButton && "bg-violet-200 rounded-full w-12 h-12 -mt-6" // Styling for the "+" button
-            )}
+            style={[
+              styles.tabItem,
+              isPlusButton && styles.plusButton,
+            ]}
           >
             {React.cloneElement(icon, {
-              color: isPlusButton ? "#6246EA" : isActive ? "#6D28D9" : "#6246EA", // White for the "+" button
+              color: isPlusButton
+                ? "#fff"
+                : isActive
+                ? "#6D28D9"
+                : "#9CA3AF",
             })}
-            {!isPlusButton && ( // Hide label for the "+" button
+            {!isPlusButton && (
               <Text
-                className={clsx(
-                  "text-xs mt-1", // Added margin-top for spacing
-                  isActive ? "text-violet-700" : "text-gray-400"
-                )}
+                style={[
+                  styles.tabText,
+                  isActive && { color: "#6D28D9" },
+                ]}
               >
                 {label}
               </Text>
@@ -69,3 +72,32 @@ export default function BottomTabsAdmin() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  tabItem: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabText: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    marginTop: 4,
+  },
+  plusButton: {
+    backgroundColor: "#6B7280",
+    borderRadius: 999,
+    width: 48,
+    height: 48,
+    marginTop: -24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

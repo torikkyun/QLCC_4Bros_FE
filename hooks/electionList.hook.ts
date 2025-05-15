@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { fetchElections } from '../api/services/electionList.service';
 
 export type Election = {
-    id: number;
-    title: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    status: string;
+  id: number;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: string;
 };
 
 export const useElectionList = () => {
@@ -15,20 +15,21 @@ export const useElectionList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadElections = async () => {
-      try {
-        const data = await fetchElections();
-        setElections(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadElections();
+  const loadElections = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchElections();
+      setElections(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { Elections, loading, error };
+  useEffect(() => {
+    loadElections();
+  }, [loadElections]);
+
+  return { Elections, loading, error, refetch: loadElections };
 };

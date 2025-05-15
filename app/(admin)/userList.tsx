@@ -1,78 +1,205 @@
 import React from 'react';
-import { View, Text, TextInput, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Image,
+  Pressable,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { useUserList } from '../../hooks/userList.hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import BottomTabsAdmin from '@/components/BottomTabsAdmin';
-import {Ionicons, Feather  } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
+
 export default function UserList() {
   const { users, loading, error } = useUserList();
-  const router = useRouter(); // dùng để điều hướng
+  const router = useRouter();
 
-  const handleViewUser = async (user: { firstName: string; lastName: string; email: string }) => {
+  const handleViewUser = async (user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  }) => {
     const fullName = `${user.firstName} ${user.lastName}`;
     await AsyncStorage.setItem('selectedUserName', fullName);
     await AsyncStorage.setItem('selectedUserEmail', user.email);
     router.push('./userInfo');
   };
+
+  const randomLocation = () => {
+    const locations = ['Bình Dương', 'Đồng Nai', 'Biên Hòa'];
+    return locations[Math.floor(Math.random() * locations.length)];
+  };
+
   return (
-    <View className="flex-1 bg-white px-4 pt-4">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-4">
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </Pressable>
-        <Text className="text-lg font-bold">4Bros</Text>
+        <Text style={styles.headerTitle}>4Bros</Text>
         <Feather name="menu" size={24} color="black" />
       </View>
 
-      <Text className="text-center text-lg font-semibold text-gray-800 mb-4">Danh sách người dùng</Text>
+      <Text style={styles.title}>Danh sách người dùng</Text>
 
-      <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mb-4">
+      <View style={styles.searchBox}>
         <TextInput
           placeholder="Search name, email, id"
-          className="flex-1 text-gray-700"
+          style={styles.searchInput}
         />
-        <Text className="text-gray-500 text-xl">🔍</Text>
+        <Text style={styles.searchIcon}>🔍</Text>
       </View>
 
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
-      {error && <Text className="text-red-500">{error}</Text>}
+      {error && <Text style={styles.error}>{error}</Text>}
 
       <FlatList
         data={users}
         keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingBottom: 80 }}
         renderItem={({ item }) => (
-          <View className="bg-blue-100 p-4 rounded-xl mb-3" >
-            <View className="flex-row justify-between items-center mb-2">
-              <View className="flex-row items-center">
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <View style={styles.userInfo}>
                 <Image
                   source={{
                     uri: `https://ui-avatars.com/api/?name=${item.firstName}+${item.lastName}`,
                   }}
-                  className="w-10 h-10 rounded-full mr-3"
+                  style={styles.avatar}
                 />
-                <Text className="text-base font-semibold text-gray-800">
+                <Text style={styles.userName}>
                   {item.firstName} {item.lastName}
                 </Text>
               </View>
-              <Text className="text-xs text-gray-500">14 min</Text>
+              <Text style={styles.timestamp}>14 min</Text>
             </View>
-            <Text className="text-xs text-gray-600">{item.email}</Text>
-            <View className="flex-row justify-between items-center mt-1">
-              <Text className="text-base font-bold text-blue-800">in Unknown</Text>
+
+            <Text style={styles.email}>{item.email}</Text>
+
+            <View style={styles.cardFooter}>
+              <Text style={styles.location}>{randomLocation()}</Text>
               <Pressable
-                className="bg-blue-500 px-4 py-1 rounded-full"
+                style={styles.viewButton}
                 onPress={() => handleViewUser(item)}
               >
-                <Text className="text-white font-medium text-sm">View</Text>
+                <Text style={styles.viewButtonText}>View</Text>
               </Pressable>
             </View>
           </View>
         )}
-        />
-        <BottomTabsAdmin/>
+      />
+      <BottomTabsAdmin />
     </View>
-
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    borderRadius: 999,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  searchInput: {
+    flex: 1,
+    color: '#374151',
+  },
+  searchIcon: {
+    fontSize: 18,
+    color: '#6b7280',
+    marginLeft: 8,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+  },
+  card: {
+    backgroundColor: '#dbeafe',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    marginRight: 12,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  email: {
+    fontSize: 12,
+    color: '#4b5563',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  location: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1e3a8a',
+  },
+  viewButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  viewButtonText: {
+    color: '#fff',
+    fontWeight: '500',
+    fontSize: 14,
+  },
+});
