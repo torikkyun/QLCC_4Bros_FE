@@ -1,4 +1,4 @@
-import { Stack , router} from "expo-router";
+import { Stack, router } from "expo-router";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usersService } from "@/api/services/users.service";
