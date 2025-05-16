@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet,Modal,TextInput,Alert, Platform } from 'react-native';
-import { useElectionList } from '../../hooks/electionList.hook';
+import { Election, useElectionList } from '../../hooks/electionList.hook';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomTabsAdmin from '@/components/BottomTabsAdmin';
@@ -24,6 +24,8 @@ const saveElectionId = async (id: string | number) => {
   }
 };
 
+
+
 const ElectionList = () => {
     const { Elections, loading, error, refetch } = useElectionList();
     const [currentPage, setCurrentPage] = useState(1);
@@ -42,12 +44,30 @@ const ElectionList = () => {
       startDate: '',
       endDate: '',
       status: 'upcoming',
+      id:'',
     });
 
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editFormData, setEditFormData] = useState<{
+  id: number | null;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: 'upcoming' | 'ongoing' | 'completed';
+}>({
+  id: null,
+  title: '',
+  description: '',
+  startDate: '',
+  endDate: '',
+  status: 'upcoming',
+});
+
+    
     const handleDeleteElection = async (id: number) => {
   const confirm = window.confirm?.('Bạn có chắc chắn muốn xóa cuộc bầu cử này?');
 
-  // Với Android không có window.confirm, bạn có thể dùng Alert API:
   if (Platform.OS !== 'web') {
     return Alert.alert(
       'Xác nhận xóa',
@@ -120,6 +140,18 @@ const ElectionList = () => {
       setModalVisible(true);
     };
   
+    const openEditModal = (election:Election) => {
+  setEditFormData({
+    id: election.id,
+    title: election.title,
+    description: election.description,
+    startDate: election.startDate,
+    endDate: election.endDate,
+    status: election.status as 'upcoming' | 'ongoing' | 'completed'
+  });
+  setEditModalVisible(true);
+};
+
     if (loading) return <Text style={styles.loading}>Đang tải dữ liệu...</Text>;
     if (error) return <Text style={styles.error}>Lỗi: {error}</Text>;
   
@@ -146,7 +178,7 @@ const ElectionList = () => {
                       <Text style={styles.label} onPress={() => openModal(election.description)}>Mô tả</Text>
                     </TouchableOpacity>
               <View style={styles.iconRow}>
-                  <TouchableOpacity style={styles.iconButton}>
+                  <TouchableOpacity style={styles.iconButton} onPress={() => openEditModal(election)}>
                     <MaterialIcons name="edit" size={22} color="#000" />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.iconButton} onPress={() => handleDeleteElection(election.id)}>
@@ -238,14 +270,15 @@ const ElectionList = () => {
                   return;
                 }
 
-                const res = await fetch('http://103.167.89.178:3000/api/election', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify(formData),
-                });
+                const { id, ...dataToSubmit } = formData;
+                  const res = await fetch('http://103.167.89.178:3000/api/election', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(dataToSubmit),
+                  });
 
                 if (!res.ok) {
                   const error = await res.json();
@@ -274,7 +307,93 @@ const ElectionList = () => {
     </View>
   </View>
 </Modal>
-   
+
+
+        <Modal visible={editModalVisible} transparent animationType="slide">
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Chỉnh Sửa Cuộc Bầu Cử</Text>
+
+                    {(['title', 'description', 'startDate', 'endDate'] as const).map((field) => (
+                      <TextInput
+                        key={field}
+                        placeholder={field}
+                        style={styles.input}
+                        value={editFormData[field]}
+                        onChangeText={(text) =>
+                          setEditFormData({ ...editFormData, [field]: text })
+                        }
+                      />
+                    ))}
+
+                    <View style={styles.input}>
+                      <Text style={{ marginBottom: 6, fontWeight: 'bold' }}>Trạng thái:</Text>
+                      {(['upcoming', 'ongoing', 'completed'] as const).map((status) => (
+                          <TouchableOpacity
+                            key={status}
+                            onPress={() => setEditFormData({ ...editFormData, status })}
+                            style={{
+                              padding: 6,
+                              backgroundColor: editFormData.status === status ? '#15AABF' : '#f1f1f1',
+                              borderRadius: 4,
+                              marginBottom: 4,
+                            }}
+                          >
+                            <Text style={{ color: editFormData.status === status ? '#fff' : '#000' }}>
+                              {status}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                    </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
+                <TouchableOpacity
+                  style={[styles.closeButton, { backgroundColor: '#0CA678' }]}
+                  onPress={async () => {
+                      try {
+                        const token = await AsyncStorage.getItem('userToken');
+                        if (!token || editFormData.id === null) {
+                          alert('Thiếu token hoặc ID.');
+                          return;
+                        }
+
+                        const { id, ...patchData } = editFormData; // loại bỏ id khỏi body
+
+                        const res = await fetch(`http://103.167.89.178:3000/api/election/${id}`, {
+                          method: 'PATCH',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify(patchData),
+                        });
+
+                        if (!res.ok) {
+                          const error = await res.json();
+                          alert(error.message || 'Cập nhật thất bại');
+                          return;
+                        }
+
+                        alert('Cập nhật thành công!');
+                        setEditModalVisible(false);
+                        await refetch();
+                      } catch (error) {
+                        console.error('PATCH error:', error);
+                        alert('Đã xảy ra lỗi khi cập nhật.');
+                      }
+                    }}
+                >
+                  <Text style={styles.closeButtonText}>Lưu</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.closeButton} onPress={() => setEditModalVisible(false)}>
+                  <Text style={styles.closeButtonText}>Huỷ</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
 
         <BottomTabsAdmin/>
       </View>
@@ -395,6 +514,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',
+    width:"30%",
   },
   closeButtonText: {
     color: 'white',

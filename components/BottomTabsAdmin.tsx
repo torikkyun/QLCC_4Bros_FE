@@ -32,7 +32,7 @@ export default function BottomTabsAdmin() {
     {
       label: "Hồ Sơ",
       icon: <Feather name="user" size={24} />,
-      path: "/profile",
+      path: "/Profile",
     },
   ];
 

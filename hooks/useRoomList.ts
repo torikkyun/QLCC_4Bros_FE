@@ -31,5 +31,5 @@ export function useRoomList() {
     loadRooms();
   }, []);
 
-  return { rooms, loading, error, handleDelete };
+  return { rooms, loading, error, handleDelete, refetch: loadRooms};
 }
