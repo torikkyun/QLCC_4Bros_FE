@@ -1,16 +1,8 @@
-
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import BottomTabsAdmin from "@/components/BottomTabsAdmin";
 
 const ProfileScreen = () => {
   const router = useRouter();
@@ -30,7 +22,7 @@ const ProfileScreen = () => {
     router.push("/(admin)/PersonalDetail");
   };
 
-    const goTochat = () => {
+  const goTochat = () => {
     router.push("/(admin)/chat");
   };
 
@@ -87,16 +79,12 @@ const ProfileScreen = () => {
         onPress={logout}
         className="bg-violet-700 p-4 rounded-xl mt-10"
       >
-        <Text className="text-white text-center text-lg font-medium">Log out</Text>
+        <Text className="text-white text-center text-lg font-medium">
+          Log out
+        </Text>
       </TouchableOpacity>
-
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0">
-        <BottomTabsAdmin />
-      </View>
     </View>
   );
 };
 
 export default ProfileScreen;
-
