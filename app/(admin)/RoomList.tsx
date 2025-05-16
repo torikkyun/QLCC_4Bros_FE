@@ -9,10 +9,28 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRoomList } from "../../hooks/useRoomList";
 import BottomTabsAdmin from "@/components/BottomTabsAdmin";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RoomListScreen() {
   const router = useRouter();
   const { rooms, loading, error, handleDelete } = useRoomList();
+
+  const handleViewRoomDetail = async (room: any) => {
+  const fullName = `${room.user?.firstName ?? ''} ${room.user?.lastName ?? ''}`;
+  try {
+    await AsyncStorage.multiSet([
+      ['roomId', room.id.toString()],
+      ['roomNumber', room.roomNumber],
+      ['roomPrice', room.price.toString()],
+      ['roomStatus', room.status],
+      ['roomDescription', room.description],
+      ['roomUserName', fullName],
+    ]);
+    router.push('./roomDetail');
+  } catch (err) {
+    console.error('Lỗi khi lưu thông tin phòng:', err);
+  }
+};
 
   const RoomCardHeader = ({
     room,
@@ -31,12 +49,7 @@ export default function RoomListScreen() {
           <Ionicons name="trash-outline" size={22} color="black" />
         </Pressable>
         <Pressable
-          onPress={() =>
-            router.push({
-              pathname: "./roomDetail", // todo
-              params: { roomData: JSON.stringify(room) },
-            })
-          }
+          onPress={() => handleViewRoomDetail(room)}
         >
           <Feather name="edit" size={22} color="black" />
         </Pressable>
@@ -89,12 +102,7 @@ export default function RoomListScreen() {
               />
               <View className="flex-row justify-between items-center">
                 <Pressable
-                  onPress={() =>
-                    router.push({
-                      pathname: "./roomDetail", // todo
-                      params: { roomData: JSON.stringify(room) },
-                    })
-                  }
+                  onPress={() => handleViewRoomDetail(room)}
                 >
                   <Text className="text-gray-400">Xem thêm</Text>
                 </Pressable>

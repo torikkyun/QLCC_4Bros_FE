@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -12,9 +12,44 @@ import {
 import { useRouter } from "expo-router";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons, Feather } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function InputLayout() {
   const [image, setImage] = useState<string | null>(null);
+
+  const [roomData, setRoomData] = useState({
+  id: '',
+  status: '',
+  price: '',
+  description: '',
+  userName: '',
+});
+
+  useEffect(() => {
+  const loadRoomInfo = async () => {
+    const values = await AsyncStorage.multiGet([
+      'roomId',
+      'roomStatus',
+      'roomPrice',
+      'roomDescription',
+      'roomUserName',
+    ]);
+    const data: any = {};
+    values.forEach(([key, value]) => {
+      if (key && value) data[key] = value;
+    });
+    setRoomData({
+      id: data.roomId,
+      status: data.roomStatus,
+      price: data.roomPrice,
+      description: data.roomDescription,
+      userName: data.roomUserName,
+    });
+  };
+
+  loadRoomInfo();
+}, []);
+
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -38,12 +73,13 @@ const router= useRouter();
         <Feather name="menu" size={24} color="black" />
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Welcome!</Text>
+        <Text style={styles.title}>ID Phòng: {roomData.id}</Text>
         <View style={styles.container}>
           <TextInput
             style={styles.singleInput}
             placeholder="Trạng thái"
             placeholderTextColor="#888"
+            value={roomData.status}
           />
 
           <View style={styles.row}>
@@ -51,11 +87,14 @@ const router= useRouter();
               style={styles.halfInput}
               placeholder="Người thuê"
               placeholderTextColor="#888"
+              value={roomData.userName}
+              editable={false}
             />
             <TextInput
               style={styles.halfInput}
               placeholder="Giá"
               placeholderTextColor="#888"
+              value={roomData.price}
             />
           </View>
 
@@ -67,6 +106,7 @@ const router= useRouter();
             placeholder="Mô tả"
             multiline={true}
             placeholderTextColor="#888"
+            value={roomData.description}
           />
 
           {/* Khu vực chọn hình ảnh */}
