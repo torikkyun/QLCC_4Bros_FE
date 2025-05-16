@@ -20,9 +20,8 @@ import FloatingButton from "@/components/FloatingButton";
 import { useHomeUser } from "@/hooks/useHomeUser";
 
 export default function HomeScreen() {
-  const { candidate, loading, error } = useHomeUser();
+  const { candidate, loading, error, electionId } = useHomeUser();
   const router = useRouter();
-
   // Animation values for Card1 (from left) and Card2 (from right)
   const card1TranslateX = useSharedValue(-300); // Start off-screen to the left
   const card2TranslateX = useSharedValue(300); // Start off-screen to the right
@@ -92,7 +91,12 @@ export default function HomeScreen() {
                       </Text>
                       <Pressable
                         style={styles.voteButton}
-                        onPress={() => router.push("../(user)/Votes")}
+                        onPress={() =>
+                          router.push({
+                            pathname: "../(user)/Votes",
+                            params: { id: electionId },
+                          })
+                        }
                       >
                         <Text style={styles.voteButtonText}>Bình Chọn</Text>
                       </Pressable>

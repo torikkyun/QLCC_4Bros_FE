@@ -5,7 +5,7 @@ import { usersService } from "@/api/services/users.service";
 
 export default function AuthLayout() {
   useEffect(() => {
-    // checkAuthStatus();
+    checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {

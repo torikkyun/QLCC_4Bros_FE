@@ -15,7 +15,6 @@ export const useVotes = (id: string | string[] | undefined) => {
     try {
       if (id) {
         const status = await votesService.checkVoteStatus(Number(id));
-        console.error(status);
         setHasVoted(status.hasVoted);
         setElectionStatus(status.electionStatus);
         setVotedCandidate(status.candidateId);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ const VotesScreen = () => {
   // const [candidates, setCandidates] = useState([]);
   // const [loading, setLoading] = useState(true);
   const { id } = useLocalSearchParams();
+
   const {
     activeIndex,
     setActiveIndex,
