@@ -92,7 +92,7 @@ export default function HomeScreen() {
                       </Text>
                       <Pressable
                         style={styles.voteButton}
-                        onPress={() => router.push("../Votes")}
+                        onPress={() => router.push("../(user)/Votes")}
                       >
                         <Text style={styles.voteButtonText}>Bình Chọn</Text>
                       </Pressable>

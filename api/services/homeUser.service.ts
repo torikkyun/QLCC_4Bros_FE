@@ -34,7 +34,6 @@ export async function getElectionResults(electionId: number) {
       Authorization: `Bearer ${token}`,
     },
   });
-
   if (!res.ok) throw new Error("Failed to fetch election results");
   const data = await res.json();
   return data;
