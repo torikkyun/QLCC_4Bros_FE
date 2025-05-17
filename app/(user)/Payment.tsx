@@ -65,11 +65,10 @@ export default function PaymentScreen() {
                 <Text className="font-semibold text-gray-900 text-base">
                   Chi Tiết Giá
                 </Text>
-                <TouchableOpacity>
-                  <Text className="text-purple-500 text-sm font-semibold">
-                    Thông tin thêm
-                  </Text>
-                </TouchableOpacity>
+
+                <Text className="text-purple-500 text-sm font-semibold">
+                  Thông tin thêm
+                </Text>
               </View>
               <View className="flex-row justify-between items-center">
                 <Text className="text-gray-600 text-base">Tổng Thanh Toán</Text>

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -140,66 +141,77 @@ const PersonalDetail: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100 p-4 justify-center">
-      <View className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto">
-        <Text className="text-3xl font-semibold text-[#1a3c5e] mb-6 text-center">
-          Thông tin cá nhân
-        </Text>
-        <View className="items-center mb-6">
-          <Image
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV0uIwYXnx-rJPETwTazZA9DowQcWcpzTZHQ&s", // URL ảnh cố định
-            }}
-            className="w-28 h-28 rounded-full border-2 border-gradient-to-r from-violet-500 to-violet-700 shadow-md"
-          />
-        </View>
-        <Text className="text-sm text-gray-500 mb-6 text-center">
-          {emailDisplay}
-        </Text>
-        <TextInput
-          value={user.firstName}
-          onChangeText={(text) => handleChange("firstName", text)}
-          placeholder="Tên"
-          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
-          placeholderTextColor="#9CA3AF"
-        />
-        <TextInput
-          value={user.lastName}
-          onChangeText={(text) => handleChange("lastName", text)}
-          placeholder="Họ"
-          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
-          placeholderTextColor="#9CA3AF"
-        />
-        <TextInput
-          value={user.email}
-          onChangeText={(text) => handleChange("email", text)}
-          placeholder="youremail@shtha.com"
-          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
-          keyboardType="email-address"
-          placeholderTextColor="#9CA3AF"
-        />
-        <TextInput
-          value={user.password}
-          onChangeText={(text) => handleChange("password", text)}
-          placeholder="Mật khẩu mới"
-          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
-          secureTextEntry
-          placeholderTextColor="#9CA3AF"
-        />
-        <TextInput
-          value={confirmPassword}
-          onChangeText={handleConfirmPasswordChange}
-          placeholder="Xác nhận mật khẩu mới"
-          className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
-          secureTextEntry
-          placeholderTextColor="#9CA3AF"
-        />
-        <TouchableOpacity
-          onPress={handleSave}
-          className="w-full bg-gradient-to-r from-violet-500 to-violet-700 p-4 rounded-xl"
-        >
-          <Text className="text-white text-center font-semibold">Cập nhật</Text>
+    <View className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Header */}
+      <View className="flex-row items-center p-4">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
+      </View>
+      {/* Main Content */}
+      <View className="flex-1 px-4 pt-20 justify-start">
+        <View className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto">
+          <Text className="text-3xl font-semibold text-[#1a3c5e] mb-6 text-center">
+            Thông tin cá nhân
+          </Text>
+          <View className="items-center mb-6">
+            <Image
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV0uIwYXnx-rJPETwTazZA9DowQcWcpzTZHQ&s",
+              }}
+              className="w-28 h-28 rounded-full border-2 border-gradient-to-r from-violet-500 to-violet-700 shadow-md"
+            />
+          </View>
+          <Text className="text-sm text-gray-500 mb-6 text-center">
+            {emailDisplay}
+          </Text>
+          <TextInput
+            value={user.firstName}
+            onChangeText={(text) => handleChange("firstName", text)}
+            placeholder="Tên"
+            className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+            placeholderTextColor="#9CA3AF"
+          />
+          <TextInput
+            value={user.lastName}
+            onChangeText={(text) => handleChange("lastName", text)}
+            placeholder="Họ"
+            className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+            placeholderTextColor="#9CA3AF"
+          />
+          <TextInput
+            value={user.email}
+            onChangeText={(text) => handleChange("email", text)}
+            placeholder="youremail@shtha.com"
+            className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+            keyboardType="email-address"
+            placeholderTextColor="#9CA3AF"
+          />
+          <TextInput
+            value={user.password}
+            onChangeText={(text) => handleChange("password", text)}
+            placeholder="Mật khẩu mới"
+            className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+            secureTextEntry
+            placeholderTextColor="#9CA3AF"
+          />
+          <TextInput
+            value={confirmPassword}
+            onChangeText={handleConfirmPasswordChange}
+            placeholder="Xác nhận mật khẩu mới"
+            className="w-full p-3 mb-4 border border-gray-200 rounded-xl text-gray-800"
+            secureTextEntry
+            placeholderTextColor="#9CA3AF"
+          />
+          <TouchableOpacity
+            onPress={handleSave}
+            className="w-full bg-violet-600 p-4 rounded-xl min-h-[56px] flex justify-center"
+          >
+            <Text className="text-white text-center font-semibold text-base">
+              Cập nhật
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

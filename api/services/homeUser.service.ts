@@ -5,11 +5,7 @@ import * as SecureStore from "expo-secure-store";
 const BASE_URL = "http://103.167.89.178:3000/api";
 
 async function getToken(): Promise<string | null> {
-  // if (Platform.OS === "web") {
   return await AsyncStorage.getItem("userToken");
-  // } else {
-  //   return await SecureStore.getItemAsync("userToken");
-  // }
 }
 
 export async function getOngoingElectionId(): Promise<number | null> {

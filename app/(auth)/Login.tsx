@@ -54,7 +54,7 @@ export default function LoginScreen() {
           className={`bg-gray-100 px-4 py-3 rounded-md text-base mb-1 ${
             errors.email ? "border border-red-500" : ""
           }`}
-          placeholder="yourmail@shrestha.com"
+          placeholder="youremail@gmail.com"
           placeholderTextColor="#999"
           keyboardType="email-address"
           autoCapitalize="none"

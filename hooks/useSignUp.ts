@@ -89,7 +89,7 @@ export const useSignUp = () => {
       // await AsyncStorage.setItem('userToken', response.accessToken);
 
       // Chuyển hướng sau khi đăng ký thành công
-      router.replace("../user/screen/home-user");
+      router.replace("../(auth)/Login");
     } catch (error: any) {
       console.error("Sign up error:", error);
       setServerError(error.message);

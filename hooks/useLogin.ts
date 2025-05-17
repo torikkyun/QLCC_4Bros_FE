@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { login } from "@/api/services/login.service";
 import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 interface JwtPayload {
   user_id: number;
   email: string;
@@ -31,6 +32,19 @@ export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Xóa token khi màn hình đăng nhập được tải
+  useEffect(() => {
+    const clearToken = async () => {
+      try {
+        await AsyncStorage.removeItem("userToken");
+        console.log("Token cleared on app start");
+      } catch (error) {
+        console.error("Error clearing token:", error);
+      }
+    };
+    clearToken();
+  }, []);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -73,16 +87,17 @@ export const useLogin = () => {
       // Giải mã accessToken
       const decoded: JwtPayload = jwtDecode(response.accessToken);
 
-      // Lưu token nếu cần
+      // Lưu token mới
       await AsyncStorage.setItem("userToken", response.accessToken);
 
-      // Điều hướng tuỳ theo vai trò
+      // Điều hướng theo vai trò
       if (decoded.role === "manager") {
         router.replace("/(admin)/home-admin");
       } else if (decoded.role === "user") {
         router.replace("/(user)/HomeUser");
       } else {
         setServerError("Không xác định được vai trò người dùng");
+        await AsyncStorage.removeItem("userToken"); // Xóa token nếu vai trò không hợp lệ
       }
     } catch (error: any) {
       console.error("Login error:", error);
