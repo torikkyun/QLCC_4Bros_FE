@@ -36,6 +36,8 @@ export default function UserList() {
   };
 
   return (
+    <View style={{flex: 1,}}>
+
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -48,13 +50,13 @@ export default function UserList() {
 
       <Text style={styles.title}>Danh sách người dùng</Text>
 
-      <View style={styles.searchBox}>
+      {/* <View style={styles.searchBox}>
         <TextInput
           placeholder="Search name, email, id"
           style={styles.searchInput}
         />
         <Text style={styles.searchIcon}>🔍</Text>
-      </View>
+      </View> */}
 
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={styles.error}>{error}</Text>}
@@ -94,6 +96,7 @@ export default function UserList() {
           </View>
         )}
       />
+    </View>
       <BottomTabsAdmin />
     </View>
   );

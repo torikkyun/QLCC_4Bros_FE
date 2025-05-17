@@ -54,7 +54,7 @@ const ProfileScreen = () => {
           className="flex-row items-center justify-between p-4 bg-gray-50 rounded-xl mb-4"
         >
           <View className="flex-row items-center">
-            <Ionicons name="settings" size={24} color="#1a3c5e" />
+            <Ionicons name="chatbubble-ellipses" size={24} color="#1a3c5e" />
             <Text className="text-lg text-gray-800 ml-3">chat</Text>
           </View>
           <Ionicons name="chevron-forward" size={24} color="#888" />
