@@ -78,7 +78,7 @@ export const useLogin = () => {
 
       // Điều hướng tuỳ theo vai trò
       if (decoded.role === "manager") {
-        router.replace("/(admin)/TenantListScreen");
+        router.replace("/(admin)/home-admin");
       } else if (decoded.role === "user") {
         router.replace("/(user)/HomeUser");
       } else {

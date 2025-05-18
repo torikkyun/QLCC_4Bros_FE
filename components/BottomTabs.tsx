@@ -27,7 +27,7 @@ export default function BottomTabs() {
     {
       label: "Cá nhân",
       icon: <Feather name="user" size={24} />,
-      path: "(user)/Profile",
+      path: "(admin)/Profile",
     },
   ];
 

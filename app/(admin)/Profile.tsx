@@ -87,7 +87,9 @@ const ProfileScreen = () => {
         onPress={logout}
         className="bg-violet-700 p-4 rounded-xl mt-10"
       >
-        <Text className="text-white text-center text-lg font-medium">Log out</Text>
+        <Text className="text-white text-center text-lg font-medium">
+          Log out
+        </Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation */}
