@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   View,
@@ -30,7 +29,7 @@ const ProfileScreen = () => {
     router.push("/(admin)/PersonalDetail");
   };
 
-    const goTochat = () => {
+  const goTochat = () => {
     router.push("/(admin)/chat");
   };
 
@@ -45,7 +44,6 @@ const ProfileScreen = () => {
         <Text className="text-2xl font-bold text-[#1a3c5e] mt-3">4B bot</Text>
         <Text className="text-gray-600">fourbros@gmail.com</Text>
       </View>
-
       {/* Menu Options */}
       <View className="mt-10">
         <TouchableOpacity
@@ -58,7 +56,6 @@ const ProfileScreen = () => {
           </View>
           <Ionicons name="chevron-forward" size={24} color="#888" />
         </TouchableOpacity>
-
         <TouchableOpacity
           onPress={goTochat} // Placeholder, có thể thêm logic khác nếu cần
           className="flex-row items-center justify-between p-4 bg-gray-50 rounded-xl mb-4"
@@ -81,7 +78,6 @@ const ProfileScreen = () => {
           <Ionicons name="chevron-forward" size={24} color="#888" />
         </TouchableOpacity>
       </View>
-
       {/* Log out Button */}
       <TouchableOpacity
         onPress={logout}
@@ -101,4 +97,3 @@ const ProfileScreen = () => {
 };
 
 export default ProfileScreen;
-
